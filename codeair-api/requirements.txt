@@ -1,0 +1,7 @@
+litestar[standard]==2.18.0
+pydantic==2.12.4
+asyncpg==0.30.0
+httpx==0.28.1
+python-dotenv==1.2.1
+pyjwt[crypto]==2.10.1
+cabina==1.1.2
