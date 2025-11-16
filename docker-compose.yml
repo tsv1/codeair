@@ -1,0 +1,117 @@
+services:
+  gitlab:
+    image: umputun/reproxy:v1.2.3
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      - LISTEN=0.0.0.0:8000
+      - DOCKER_ENABLED=false
+      - STATIC_ENABLED=true
+      - STATIC_RULES=*,^/(.*),http://gitlab-server:80/$$1
+
+  gitlab-redis:
+    image: redis:7
+    restart: always
+    command:
+      - --loglevel warning
+    volumes:
+      - ./.gitlab/redis/data:/data:Z
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+  gitlab-postgresql:
+    image: kkimurak/sameersbn-postgresql:16
+    restart: always
+    volumes:
+      - ./.gitlab/postgresql/data:/var/lib/postgresql:Z
+    environment:
+      - DB_USER=gitlab
+      - DB_PASS=dev_v1tdlxdpd7
+      - DB_NAME=gitlabhq_prod
+      - DB_EXTENSION=pg_trgm,btree_gist
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "gitlab", "-d", "gitlabhq_prod"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  gitlab-server:
+    restart: always
+    image: sameersbn/gitlab:18.2.1
+    depends_on:
+      - gitlab-redis
+      - gitlab-postgresql
+    ports:
+      - "80"
+    volumes:
+      - ./.gitlab/data:/home/git/data:Z
+    healthcheck:
+      test: ["CMD", "/usr/local/sbin/healthcheck"]
+      interval: 30s
+      timeout: 10s
+      retries: 30
+    environment:
+      - DEBUG=false
+
+      - DB_ADAPTER=postgresql
+      - DB_HOST=gitlab-postgresql
+      - DB_PORT=5432
+      - DB_USER=gitlab
+      - DB_PASS=dev_v1tdlxdpd7
+      - DB_NAME=gitlabhq_prod
+
+      - REDIS_HOST=gitlab-redis
+      - REDIS_PORT=6379
+
+      - TZ=UTC
+      - GITLAB_TIMEZONE=UTC
+
+      - GITLAB_HOST=gitlab
+      - GITLAB_PORT=8000
+      - GITLAB_SSH_PORT=2222
+      - GITLAB_RELATIVE_URL_ROOT=
+
+      - GITLAB_SECRETS_DB_KEY_BASE=dev_97424vaq2oocxf2fiqrcumq1q4sqbi06
+      - GITLAB_SECRETS_SECRET_KEY_BASE=dev_97424vaq2oocxf2fiqrcumq1q4sqbi06
+      - GITLAB_SECRETS_OTP_KEY_BASE=dev_97424vaq2oocxf2fiqrcumq1q4sqbi06
+      - GITLAB_SECRETS_ENCRYPTED_SETTINGS_KEY_BASE=dev_97424vaq2oocxf2fiqrcumq1q4sqbi06
+
+      - GITLAB_SECRETS_ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY=["dev_cw32flomo7qzrdchaw9bzeik4jb12ql0"]
+      - GITLAB_SECRETS_ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY=["dev_cw32flomo7qzrdchaw9bzeik4jb12ql0"]
+      - GITLAB_SECRETS_ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT=dev_cw32flomo7qzrdchaw9bzeik4jb12ql0
+
+      - GITLAB_ROOT_EMAIL=root@example.com
+      - GITLAB_ROOT_PASSWORD=dev_pqo304v46b
+
+      - GITLAB_PACKAGES_ENABLED=false
+      - GITLAB_PROJECTS_WIKI=false
+      - GITLAB_PROJECTS_CONTAINER_REGISTRY=false
+      - GITLAB_NOTIFY_ON_BROKEN_BUILDS=false
+      - GITLAB_GRAVATAR_ENABLED=false
+
+      - GITLAB_WEBHOOK_TIMEOUT=100
+      - GITLAB_WEBHOOK_ALLOWED_LOCAL_NETWORKS=true
+      - GITLAB_ALLOW_LOCAL_REQUESTS_FROM_WEB_HOOKS_AND_SERVICES=true
+      - GITLAB_ALLOW_LOCAL_REQUESTS_FROM_SYSTEM_HOOKS=true
+
+  codeair-postgresql:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      - TZ=UTC
+      - POSTGRES_USER=codeair
+      - POSTGRES_PASSWORD=dev_hcxrh66fn4
+      - POSTGRES_DB=codeair
+    ports:
+      - "5432"
+    volumes:
+      - ./.pgsql/data:/var/lib/postgresql/data
+    healthcheck:
+      test: "pg_isready -U codeair"
+      interval: 10s
+      timeout: 10s
+      retries: 5
