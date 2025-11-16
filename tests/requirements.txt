@@ -1,0 +1,4 @@
+vedro==1.15.1
+vedro-d42-validator==1.4.0
+vedro-httpx==0.8.1
+vedro-pw==0.4.0
