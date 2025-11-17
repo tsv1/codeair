@@ -107,7 +107,7 @@ services:
       - POSTGRES_PASSWORD=dev_hcxrh66fn4
       - POSTGRES_DB=codeair
     ports:
-      - "5432"
+      - "6432:5432"
     volumes:
       - ./.pgsql/data:/var/lib/postgresql/data
     healthcheck:
