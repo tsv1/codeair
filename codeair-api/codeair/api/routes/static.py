@@ -6,7 +6,7 @@ from codeair.config import Config
 __all__ = ["static_router"]
 
 
-@get("/", exclude_from_auth=True)
+@get(["/", "/{path:path}"], exclude_from_auth=True)
 async def serve_index() -> File:
     index_path = Config.App.STATIC_DIR / "index.html"
     return File(path=index_path,

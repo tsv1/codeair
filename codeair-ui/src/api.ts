@@ -1,4 +1,4 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api/v1';
 
 export interface User {
   id: number;
@@ -17,7 +17,7 @@ export interface LoginUrlResponse {
 }
 
 export async function getLoginUrl(): Promise<LoginUrlResponse> {
-  const response = await fetch(`${API_BASE_URL}/api/v1/auth/gitlab/authorize`);
+  const response = await fetch(`${API_BASE_URL}/auth/gitlab/authorize`);
   if (!response.ok) {
     throw new Error('Failed to get login URL');
   }
@@ -25,7 +25,7 @@ export async function getLoginUrl(): Promise<LoginUrlResponse> {
 }
 
 export async function handleCallback(code: string): Promise<AuthResponse> {
-  const response = await fetch(`${API_BASE_URL}/api/v1/auth/gitlab/callback?code=${code}`);
+  const response = await fetch(`${API_BASE_URL}/auth/gitlab/callback?code=${code}`);
   if (!response.ok) {
     throw new Error('Failed to authenticate');
   }
@@ -33,7 +33,7 @@ export async function handleCallback(code: string): Promise<AuthResponse> {
 }
 
 export async function logout(token: string): Promise<void> {
-  const response = await fetch(`${API_BASE_URL}/api/v1/auth/logout`, {
+  const response = await fetch(`${API_BASE_URL}/auth/logout`, {
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${token}`,
