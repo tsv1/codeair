@@ -23,6 +23,6 @@ COPY codeair-api/ ./
 # Copy built UI from the first stage to the static directory
 COPY --from=ui-builder /app/ui/dist/ ./codeair/static/
 
-EXPOSE 5000
+EXPOSE 80
 
-CMD ["python", "-m", "uvicorn", "codeair.start_server:app", "--host", "0.0.0.0", "--port", "5000"]
+CMD ["python", "-m", "uvicorn", "codeair.start_server:app", "--host", "0.0.0.0", "--port", "80"]
