@@ -3,12 +3,11 @@ from datetime import datetime
 from enum import StrEnum
 from typing import Optional
 
+from codeair.clients import DatabaseClient, GitLabClient
+from codeair.config import Config as cfg
 from litestar import Response, Router, get
 from litestar.status_codes import HTTP_200_OK, HTTP_503_SERVICE_UNAVAILABLE
 from pydantic import BaseModel, Field
-
-from codeair.clients import DatabaseClient, GitLabClient
-from codeair.config import Config as cfg
 
 __all__ = ["healthcheck_router"]
 

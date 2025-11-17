@@ -3,11 +3,6 @@ from datetime import timedelta
 from typing import Any, AsyncGenerator, Optional
 
 import httpx
-from litestar import Request
-from litestar.connection import ASGIConnection
-from litestar.exceptions import NotAuthorizedException
-from litestar.security.jwt import JWTAuth, Token
-
 from codeair.clients import DatabaseClient, GitLabClient
 from codeair.config import Config
 from codeair.domain.agents import AgentRepository
@@ -18,6 +13,10 @@ from codeair.services import AgentService, AuthService, UserService, WebhookServ
 from codeair.services.job_queue_service import JobQueueService
 from codeair.services.project_service import ProjectService
 from codeair.services.token_encryption import TokenEncryption
+from litestar import Request
+from litestar.connection import ASGIConnection
+from litestar.exceptions import NotAuthorizedException
+from litestar.security.jwt import JWTAuth, Token
 
 
 async def retrieve_user_handler(

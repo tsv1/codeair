@@ -29,14 +29,14 @@ class AgentRepository:
         )
         # Note: created_by and updated_by are stored in DB but not exposed in the model
 
-    async def find_by_id(self, project_id: int, agent_id: UUID) -> Agent | None:
+    async def find_by_id(self, agent_id: UUID) -> Agent | None:
         sql = """
             SELECT id, agent_type, engine, name, description, enabled, config,
-                   created_at, created_by, updated_at, updated_by
+                   created_at, updated_at
             FROM agents
-            WHERE project_id = $1 AND id = $2
+            WHERE id = $1
         """
-        row = await self._db_client.fetch_one(sql, project_id, agent_id)
+        row = await self._db_client.fetch_one(sql, agent_id)
         return self._row_to_agent(row) if row else None
 
     async def find_by_project_id(self, project_id: int) -> list[Agent]:

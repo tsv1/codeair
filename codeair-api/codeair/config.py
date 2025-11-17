@@ -25,7 +25,7 @@ class Config(cabina.Config):
         STATIC_DIR: Path = Path(__file__).parent / "static"
 
     class Logging(cabina.Section):
-        LEVEL: str = env.str("LOG_LEVEL", default="INFO")
+        LEVEL: str = env.str("LOG_LEVEL", default="ERROR")
 
     class GitLab(cabina.Section):
         OAUTH_CLIENT_ID: str = env.str("GITLAB_OAUTH_CLIENT_ID")

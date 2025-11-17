@@ -1,7 +1,6 @@
+from codeair.config import Config
 from litestar import Router, get
 from litestar.response import File
-
-from codeair.config import Config
 
 __all__ = ["static_router"]
 

@@ -1,12 +1,6 @@
 import logging
 from pathlib import Path
 
-from litestar import Litestar
-from litestar.config.cors import CORSConfig
-from litestar.exceptions import HTTPException, ValidationException
-from litestar.logging import LoggingConfig
-from litestar.static_files import create_static_files_router
-
 from codeair.api.error_handlers import (domain_exception_handler, generic_exception_handler, http_exception_handler,
                                         validation_exception_handler)
 from codeair.api.routes import (agent_router, auth_router, healthcheck_router, project_router, static_router,
@@ -15,6 +9,11 @@ from codeair.config import Config
 from codeair.di.containers import api_dependencies
 from codeair.di.providers import DatabaseClientManager, HTTPClientManager, jwt_auth
 from codeair.domain.errors import DomainError
+from litestar import Litestar
+from litestar.config.cors import CORSConfig
+from litestar.exceptions import HTTPException, ValidationException
+from litestar.logging import LoggingConfig
+from litestar.static_files import create_static_files_router
 
 logger = logging.getLogger(__name__)
 

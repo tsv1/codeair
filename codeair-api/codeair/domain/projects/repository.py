@@ -34,12 +34,12 @@ class ProjectRepository:
         result = await self._db_client.fetch_one(sql, project_id, created_by, webhook_id)
         return result["webhook_id"]
 
-    async def get_webhook_id(self, project_id: int) -> UUID | None:
+    async def get_webhook_id_project_id(self, project_id: int) -> UUID | None:
         sql = "SELECT webhook_id FROM projects WHERE id = $1"
         result = await self._db_client.fetch_one(sql, project_id)
         return result["webhook_id"] if result else None
 
-    async def get_project_id_by_webhook(self, webhook_id: UUID) -> int:
+    async def get_project_id_by_webhook_id(self, webhook_id: UUID) -> int:
         sql = "SELECT id FROM projects WHERE webhook_id = $1"
         result = await self._db_client.fetch_one(sql, webhook_id)
         return result["id"] if result else None

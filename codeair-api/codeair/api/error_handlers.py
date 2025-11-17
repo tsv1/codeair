@@ -1,10 +1,9 @@
+from codeair.domain.errors import AuthenticationError, DomainError, EntityNotFoundError
+from codeair.domain.errors import ValidationError as DomainValidationError
 from litestar import Request, Response
 from litestar.exceptions import HTTPException, ValidationException
 from litestar.status_codes import (HTTP_400_BAD_REQUEST, HTTP_401_UNAUTHORIZED, HTTP_404_NOT_FOUND,
                                    HTTP_500_INTERNAL_SERVER_ERROR)
-
-from codeair.domain.errors import AuthenticationError, DomainError, EntityNotFoundError
-from codeair.domain.errors import ValidationError as DomainValidationError
 
 __all__ = ["validation_exception_handler", "http_exception_handler", "generic_exception_handler", "domain_exception_handler"]
 

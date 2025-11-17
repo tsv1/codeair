@@ -53,28 +53,23 @@ class JobRepository:
         rows = await self._db_client.fetch_many(sql, agent_id)
         return [self._row_to_job(row) for row in rows]
 
-    async def find_pending_job(self) -> list[Job]:
-        sql = """
-            SELECT id, agent_id, payload, created_at, started_at, ended_at
-            FROM jobs
-            WHERE started_at IS NULL
-            ORDER BY created_at ASC
-            LIMIT $1
-        """
-        rows = await self._db_client.fetch_many(sql)
-        return [self._row_to_job(row) for row in rows]
-
-    async def start_job(self, job_id: int) -> Job | None:
+    async def claim_next_job(self) -> Job | None:
         sql = """
             UPDATE jobs
             SET started_at = NOW()
-            WHERE id = $1
+            WHERE id = (
+                SELECT id FROM jobs
+                WHERE started_at IS NULL
+                ORDER BY created_at ASC
+                LIMIT 1
+                FOR UPDATE SKIP LOCKED
+            )
             RETURNING id, agent_id, payload, created_at, started_at, ended_at
         """
-        row = await self._db_client.fetch_one(sql, job_id)
+        row = await self._db_client.fetch_one(sql)
         return self._row_to_job(row) if row else None
 
-    async def end_job(self, job_id: int) -> Job | None:
+    async def complete_job(self, job_id: int) -> Job | None:
         sql = """
             UPDATE jobs
             SET ended_at = NOW()

@@ -1,13 +1,12 @@
 from typing import Annotated, Any
 
+from codeair.domain.users import User
+from codeair.services import AuthService
 from litestar import Request, Response, Router, get, post
 from litestar.params import Body, Parameter
 from litestar.security.jwt import Token
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED
 from pydantic import BaseModel, Field
-
-from codeair.domain.users import User
-from codeair.services import AuthService
 
 __all__ = ["auth_router"]
 

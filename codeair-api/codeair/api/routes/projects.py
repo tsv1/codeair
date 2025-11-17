@@ -1,14 +1,13 @@
 import asyncio
 from typing import Annotated
 
-from litestar import Router, get
-from litestar.params import Parameter
-from pydantic import BaseModel
-
 from codeair.domain.projects import Project
 from codeair.domain.users import User
 from codeair.services.project_service import ProjectService
 from codeair.services.user_service import UserService
+from litestar import Router, get
+from litestar.params import Parameter
+from pydantic import BaseModel
 
 __all__ = ["project_router"]
 

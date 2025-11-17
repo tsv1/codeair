@@ -1,13 +1,12 @@
 from logging import Logger
 from urllib.parse import urlencode
 
-from litestar.security.jwt import JWTAuth
-
 from codeair.clients import GitLabClient
 from codeair.clients.gitlab import GitLabAuthError
 from codeair.domain.errors import AuthenticationError
 from codeair.domain.users import User
 from codeair.services.user_service import UserService
+from litestar.security.jwt import JWTAuth
 
 __all__ = ["AuthService"]
 

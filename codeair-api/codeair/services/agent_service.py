@@ -54,26 +54,44 @@ class AgentService:
             agent.config.token = self._default_token
 
         agent.config.token = self._token_encryption.encrypt(agent.config.token)
-
-        return await self._agent_repository.save(project_id, agent, user_id)
+        saved_agent = await self._agent_repository.save(project_id, agent, user_id)
+        return self._hash_agent_token(saved_agent)
 
     async def list_agents(self, project_id: int) -> list[Agent]:
-        return await self._agent_repository.find_by_project_id(project_id)
+        agents = await self._agent_repository.find_by_project_id(project_id)
+        return [self._hash_agent_token(agent) for agent in agents]
 
-    async def get_agent(self, project_id: int, agent_id: UUID) -> Agent:
-        agent: Agent | None = await self._agent_repository.find_by_id(project_id, agent_id)
+    async def get_agent(self, agent_id: UUID) -> Agent:
+        agent: Agent | None = await self._agent_repository.find_by_id(agent_id)
+        if agent is None:
+            raise EntityNotFoundError("Agent not found")
+        return self._hash_agent_token(agent)
 
+    async def get_agent_with_raw_token(self, agent_id: UUID) -> Agent:
+        agent: Agent | None = await self._agent_repository.find_by_id(agent_id)
         if agent is None:
             raise EntityNotFoundError("Agent not found")
 
+        # Decrypt the token
+        agent.config.token = self._token_encryption.decrypt(agent.config.token)
         return agent
 
     async def update_agent(self, project_id: int, agent_id: UUID, agent: Agent, user_id: int) -> Agent:
-        existing_agent: Agent | None = await self._agent_repository.find_by_id(project_id, agent_id)
+        existing_agent: Agent | None = await self._agent_repository.find_by_id(agent_id)
 
         if existing_agent is None:
             raise EntityNotFoundError("Agent not found")
 
         agent.id = existing_agent.id  # Ensure the ID remains the same
 
-        return await self._agent_repository.save(project_id, agent, user_id)
+        if agent.config.token == self._token_encryption.hash_token(existing_agent.config.token):
+            agent.config.token = existing_agent.config.token
+        else:
+            agent.config.token = self._token_encryption.encrypt(agent.config.token)
+
+        saved_agent = await self._agent_repository.save(project_id, agent, user_id)
+        return self._hash_agent_token(saved_agent)
+
+    def _hash_agent_token(self, agent: Agent) -> Agent:
+        agent.config.token = self._token_encryption.hash_token(agent.config.token)
+        return agent

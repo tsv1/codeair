@@ -2,7 +2,6 @@ from logging import Logger
 from typing import Any, TypedDict
 
 import httpx
-
 from codeair.clients.git_provider import GitProvider
 
 __all__ = ["GitLabClient", "UserData", "ProjectData", "WebhookData", "GitLabAPIError", "GitLabAuthError",
@@ -75,7 +74,7 @@ class GitLabClient(GitProvider):
             },
         )
 
-        if response.status_code == 401:
+        if response.status_code in (400, 401):
             self._logger.error(f"OAuth exchange failed: Invalid or expired authorization code")
             raise GitLabAuthError("Invalid or expired authorization code")
         elif response.status_code != 200:
