@@ -2,6 +2,7 @@ import { useAuth } from './AuthContext';
 import { Login } from './Login';
 import { Callback } from './Callback';
 import { Dashboard } from './Dashboard';
+import { ProjectView } from './ProjectView';
 
 function App() {
   const { user, isLoading } = useAuth();
@@ -27,6 +28,13 @@ function App() {
   // Show login if not authenticated
   if (!user) {
     return <Login />;
+  }
+
+  // Handle project view route
+  const projectMatch = path.match(/^\/project\/(\d+)$/);
+  if (projectMatch) {
+    const projectId = parseInt(projectMatch[1], 10);
+    return <ProjectView projectId={projectId} />;
   }
 
   // Show dashboard if authenticated
