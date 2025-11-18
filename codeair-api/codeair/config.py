@@ -37,7 +37,7 @@ class Config(cabina.Config):
     class JWT(cabina.Section):
         SECRET_KEY: str = env.str("JWT_SECRET_KEY")
         ALGORITHM: str = env.str("JWT_ALGORITHM", default="HS256")
-        ACCESS_TOKEN_EXPIRE_SECONDS: int = env.int("JWT_ACCESS_TOKEN_EXPIRE_SECONDS", default=86400)
+        TOKEN_EXPIRE_SECONDS: int = env.int("JWT_TOKEN_EXPIRE_SECONDS", default=86400)
         ISSUER: str = env.str("JWT_ISSUER", default="codeair")
         AUDIENCE: str = env.str("JWT_AUDIENCE", default="codeair-api")
 
@@ -45,9 +45,10 @@ class Config(cabina.Config):
         ALLOW_ORIGINS: tuple[str] = env.tuple("CORS_ALLOW_ORIGINS", default=())
 
     class AI(cabina.Section):
-        DEFAULT_PROVIDER: str = env.str("AI_DEFAULT_PROVIDER", default="")
-        DEFAULT_MODEL: str = env.str("AI_DEFAULT_MODEL", default="")
-        DEFAULT_TOKEN: str = env.str("AI_DEFAULT_TOKEN", default="")
+        DEFAULT_PROVIDER: str = env.str("AI_DEFAULT_PROVIDER", default="anthropic")
+        DEFAULT_MODEL: str = env.str("AI_DEFAULT_MODEL", default="anthropic/claude-3-7-sonnet-20250219")
+        DEFAULT_TOKEN: str = env.str("AI_DEFAULT_TOKEN", default="-")
+        PROVIDER_BASE_URL: str = env.str("PROVIDER_BASE_URL", default="https://api.anthropic.com")
 
     class Database(cabina.Section):
         URL: str = env.str("DATABASE_URL")

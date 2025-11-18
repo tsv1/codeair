@@ -6,6 +6,7 @@ import httpx
 from codeair.clients import DatabaseClient, GitLabClient
 from codeair.config import Config
 from codeair.domain.agents import AgentRepository
+from codeair.domain.job_logs import JobLogRepository
 from codeair.domain.jobs.repository import JobRepository
 from codeair.domain.projects import ProjectRepository
 from codeair.domain.users import User, UserRepository
@@ -40,7 +41,7 @@ async def retrieve_user_handler(
 jwt_auth = JWTAuth[User](
     retrieve_user_handler=retrieve_user_handler,
     token_secret=Config.JWT.SECRET_KEY,
-    default_token_expiration=timedelta(seconds=Config.JWT.ACCESS_TOKEN_EXPIRE_SECONDS),
+    default_token_expiration=timedelta(seconds=Config.JWT.TOKEN_EXPIRE_SECONDS),
     exclude=[
         "/api/v1/health",
         "/api/v1/health/detailed",
@@ -142,6 +143,9 @@ def provide_agent_service(
         agent_repository=agent_repository,
         token_encryption=token_encryption,
         logger=logging.getLogger("app.services.agent"),
+        default_provider=Config.AI.DEFAULT_PROVIDER,
+        default_model=Config.AI.DEFAULT_MODEL,
+        default_token=Config.AI.DEFAULT_TOKEN,
     )
 
 
@@ -200,6 +204,13 @@ def provide_job_repository(db_client: DatabaseClient) -> JobRepository:
     return JobRepository(
         db_client,
         logger=logging.getLogger("app.repositories.job"),
+    )
+
+
+def provide_job_log_repository(db_client: DatabaseClient) -> JobLogRepository:
+    return JobLogRepository(
+        db_client,
+        logger=logging.getLogger("app.repositories.job_log"),
     )
 
 

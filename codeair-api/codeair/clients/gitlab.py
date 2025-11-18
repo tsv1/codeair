@@ -147,7 +147,7 @@ class GitLabClient(GitProvider):
                 "search": query.strip(),
                 "membership": True,
                 "simple": True,
-                "per_page": 20,
+                "per_page": 10,
             },
         )
 
