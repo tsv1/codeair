@@ -77,3 +77,18 @@ class GitLabAPI(AsyncHTTPInterface):
     async def get_project_webhooks(self, project_id: int, token: str) -> Response:
         headers = {"PRIVATE-TOKEN": token}
         return await self._request("GET", f"/api/v4/projects/{project_id}/hooks", headers=headers)
+
+    async def delete_project_webhook(self, project_id: int, webhook_id: int, token: str) -> Response:
+        headers = {"PRIVATE-TOKEN": token}
+        return await self._request("DELETE", f"/api/v4/projects/{project_id}/hooks/{webhook_id}",
+                                   headers=headers)
+
+    async def update_project_webhook(self, project_id: int, webhook_id: int, token: str,
+                                     merge_requests_events: bool | None = None) -> Response:
+        payload = {}
+        if merge_requests_events is not None:
+            payload["merge_requests_events"] = merge_requests_events
+
+        headers = {"PRIVATE-TOKEN": token}
+        return await self._request("PUT", f"/api/v4/projects/{project_id}/hooks/{webhook_id}",
+                                   json=payload, headers=headers)

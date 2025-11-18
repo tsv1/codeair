@@ -1,13 +1,14 @@
-import json
 from dataclasses import asdict
 from http import HTTPStatus
 
 from contexts import bot_user, logged_in_user
 from contexts.agents import created_agent
 from contexts.gitlab import added_project_member, created_gitlab_project
+from d42 import fake
+from effects import token_is_hashed
 from interfaces import CodeAirAPI
 from libs.gitlab import GitLabAccessLevel
-from schemas.agents import AgentsListResponseSchema
+from schemas.agents import AgentsListResponseSchema, NewAgentSchema
 from schemas.errors import ErrorResponseSchema
 from vedro import given, scenario, then, when
 
@@ -40,7 +41,10 @@ async def _():
         bot = await bot_user()
         await added_project_member(project, bot.id, GitLabAccessLevel.MAINTAINER, user.token)
 
-        agent = await created_agent(user, project.id)
+        orig_token = fake(NewAgentSchema["config"]["token"])
+        agent = await created_agent(user, project.id, config={
+            "token": orig_token
+        })
 
     with when:
         response = await CodeAirAPI().list_agents(user.jwt_token, project.id)
@@ -55,6 +59,8 @@ async def _():
                 asdict(agent)
             ]
         }
+
+        assert token_is_hashed(body["agents"][0]["config"]["token"], orig_token)
 
 
 @scenario("List agents for project with multiple agents")

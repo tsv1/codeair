@@ -27,18 +27,19 @@ async def created_agent(
     project_id: int,
     agent_type: Optional[str] = None,
     engine: Optional[str] = None,
-    agent_data: Optional[dict] = None,
+    config: Optional[dict] = None,
 ) -> CreatedAgent:
-    if agent_data is None:
-        if engine == "external":
-            agent_data = fake(NewExternalAgentSchema % {
-                "type": agent_type or "mr-describer",
-                "engine": "external",
-            })
-        else:
-            agent_data = fake(NewAgentSchema % {
-                "type": agent_type or "mr-describer",
-            })
+    if engine == "external":
+        agent_data = fake(NewExternalAgentSchema % {
+            "type": agent_type or "mr-describer",
+            "engine": "external",
+            "config": config or {},
+        })
+    else:
+        agent_data = fake(NewAgentSchema % {
+            "type": agent_type or "mr-describer",
+            "config": config or {},
+        })
 
     response = await CodeAirAPI().create_agent(user.jwt_token, project_id, agent_data)
     response.raise_for_status()

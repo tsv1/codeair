@@ -5,12 +5,12 @@ from contexts import bot_user, logged_in_user
 from contexts.agents import created_agent
 from contexts.gitlab import added_project_member, created_gitlab_project
 from d42 import fake, schema
-from helpers import get_project_webhooks
+from effects import token_is_hashed, webhook_exists
+from helpers import delete_project_webhooks, get_project_webhooks, update_project_webhook
 from interfaces import CodeAirAPI, GitLabAPI
 from libs.gitlab import GitLabAccessLevel
 from schemas.agents import AgentResponseSchema, NewAgentSchema, NewExternalAgentSchema
 from schemas.errors import ErrorResponseSchema
-from schemas.webhooks import WebhookSchema
 from vedro import given, params, scenario, then, when
 
 
@@ -26,7 +26,10 @@ async def _(field_name: str):
         bot = await bot_user()
         await added_project_member(project, bot.id, GitLabAccessLevel.MAINTAINER, user.token)
 
-        agent = await created_agent(user, project.id)
+        orig_token = fake(NewAgentSchema["config"]["token"])
+        agent = await created_agent(user, project.id, config={
+            "token": orig_token
+        })
         update_data = {
             **asdict(agent),
             field_name: fake(AgentResponseSchema[field_name])
@@ -46,8 +49,9 @@ async def _(field_name: str):
             }
         })
 
-        webhooks = await get_project_webhooks(project.id, user.token)
-        assert webhooks == schema.list([..., WebhookSchema, ...])
+        assert token_is_hashed(body["agent"]["config"]["token"], orig_token)
+
+        assert await webhook_exists(project.id, user.token)
 
 
 @scenario("Update agent config {config_field}", cases=[
@@ -63,7 +67,10 @@ async def _(config_field: str):
         bot = await bot_user()
         await added_project_member(project, bot.id, GitLabAccessLevel.MAINTAINER, user.token)
 
-        agent = await created_agent(user, project.id, engine="external")
+        orig_token = fake(NewAgentSchema["config"]["token"])
+        agent = await created_agent(user, project.id, engine="external", config={
+            "token": orig_token
+        })
         update_data = {
             **asdict(agent),
             "config": {
@@ -86,14 +93,82 @@ async def _(config_field: str):
             }
         })
 
+        assert token_is_hashed(body["agent"]["config"]["token"], orig_token)
+
+        assert await webhook_exists(project.id, user.token)
+
+
+@scenario("Update agent when webhook was deleted")
+async def _():
+    with given:
+        user = await logged_in_user()
+        project = await created_gitlab_project(user)
+        bot = await bot_user()
+        await added_project_member(project, bot.id, GitLabAccessLevel.MAINTAINER, user.token)
+
+        agent = await created_agent(user, project.id)
+
+        await delete_project_webhooks(project.id, user.token)
+
+        update_data = {
+            **asdict(agent),
+            "name": fake(AgentResponseSchema["name"])
+        }
+
+    with when:
+        response = await CodeAirAPI().update_agent(user.jwt_token, project.id, agent.id, update_data)
+
+    with then:
+        assert response.status_code == HTTPStatus.OK
+
+        body = response.json()
+        assert body == schema.dict({
+            "agent": AgentResponseSchema % {
+                **update_data,
+                "updated_at": body["agent"]["updated_at"],  # Ignore updated_at value
+            }
+        })
+
+        assert await webhook_exists(project.id, user.token)
+
+
+@scenario("Update agent when webhook config was modified")
+async def _():
+    with given:
+        user = await logged_in_user()
+        project = await created_gitlab_project(user)
+        bot = await bot_user()
+        await added_project_member(project, bot.id, GitLabAccessLevel.MAINTAINER, user.token)
+
+        agent = await created_agent(user, project.id)
+
         webhooks = await get_project_webhooks(project.id, user.token)
-        assert webhooks == schema.list([..., WebhookSchema, ...])
+        await update_project_webhook(project.id, webhooks[0]["id"], user.token,
+                                     merge_requests_events=False)
+
+        update_data = {
+            **asdict(agent),
+            "description": fake(AgentResponseSchema["description"])
+        }
+
+    with when:
+        response = await CodeAirAPI().update_agent(user.jwt_token, project.id, agent.id, update_data)
+
+    with then:
+        assert response.status_code == HTTPStatus.OK
+
+        body = response.json()
+        assert body == schema.dict({
+            "agent": AgentResponseSchema % {
+                **update_data,
+                "updated_at": body["agent"]["updated_at"],  # Ignore updated_at value
+            }
+        })
+
+        assert await webhook_exists(project.id, user.token)
 
 
-from vedro import skip
-
-
-@scenario[skip]("Update agent config with new token")
+@scenario("Update agent config with new token")
 async def _():
     with given:
         user = await logged_in_user()
@@ -120,15 +195,22 @@ async def _():
         assert response.status_code == HTTPStatus.OK
 
         body = response.json()
-        # Token should be hashed and different from the original
-        assert body["agent"]["config"]["token"] != agent.config["token"]
-        assert body["agent"]["config"]["token"] != new_token  # Should be hashed
+        assert body == schema.dict({
+            "agent": AgentResponseSchema % {
+                **asdict(agent),
+                "config": {
+                    **agent.config,
+                    "token": body["agent"]["config"]["token"],  # Use returned hashed token
+                },
+                "updated_at": body["agent"]["updated_at"],  # Ignore updated_at value
+            }
+        })
+
+        assert body["agent"]["config"]["token"] != agent.config["token"]  # Should be changed
+        assert token_is_hashed(body["agent"]["config"]["token"], new_token)
 
 
-from vedro import skip
-
-
-@scenario[skip]("Update agent config but keep existing token (send hash)")
+@scenario("Update agent config but keep existing token (send hash)")
 async def _():
     with given:
         user = await logged_in_user()
@@ -136,15 +218,21 @@ async def _():
         bot = await bot_user()
         await added_project_member(project, bot.id, GitLabAccessLevel.MAINTAINER, user.token)
 
-        agent = await created_agent(user, project.id)
+        orig_token = fake(NewAgentSchema["config"]["token"])
+        agent = await created_agent(user, project.id, config={
+            "token": orig_token
+        })
+
         existing_token_hash = agent.config["token"]
 
     with when:
         response = await CodeAirAPI().update_agent(
             user.jwt_token, project.id, agent.id,
             {
+                **asdict(agent),
                 "config": {
-                    "token": existing_token_hash,  # Send the hash back
+                    **agent.config,
+                    "token": existing_token_hash,
                 }
             }
         )
@@ -153,8 +241,15 @@ async def _():
         assert response.status_code == HTTPStatus.OK
 
         body = response.json()
-        # Token hash should remain the same
-        assert body["agent"]["config"]["token"] == existing_token_hash
+        assert body == schema.dict({
+            "agent": AgentResponseSchema % {
+                **asdict(agent),
+                "updated_at": body["agent"]["updated_at"],  # Ignore updated_at value
+            }
+        })
+
+        assert body["agent"]["config"]["token"] == agent.config["token"]  # Should be unchanged
+        assert token_is_hashed(body["agent"]["config"]["token"], orig_token)
 
 
 @scenario("Try to update non-updatable field {field_name}", cases=[

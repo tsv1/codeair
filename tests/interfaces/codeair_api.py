@@ -60,6 +60,13 @@ class CodeAirAPI(AsyncHTTPInterface):
         return await self._request("GET", f"/api/v1/projects/{project_id}/agents",
                                     headers=headers)
 
+    async def get_agent_placeholders(self, jwt_token: str | None, project_id: int) -> Response:
+        headers = {}
+        if jwt_token:
+            headers["Authorization"] = f"Bearer {jwt_token}"
+        return await self._request("GET", f"/api/v1/projects/{project_id}/agents/placeholders",
+                                    headers=headers)
+
     async def create_agent(self, jwt_token: str | None, project_id: int, agent_data: dict) -> Response:
         headers = {}
         if jwt_token:

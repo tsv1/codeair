@@ -4,12 +4,11 @@ from contexts import bot_user, logged_in_user
 from contexts.gitlab import added_project_member, created_gitlab_project
 from d42 import fake, schema
 from d42.utils import make_required
-from helpers import get_project_webhooks
+from effects import token_is_hashed, webhook_exists
 from interfaces import CodeAirAPI
 from libs.gitlab import GitLabAccessLevel
 from schemas.agents import AgentResponseSchema, NewAgentSchema, NewExternalAgentSchema
 from schemas.errors import ErrorResponseSchema
-from schemas.webhooks import WebhookSchema
 from vedro import given, params, scenario, then, when
 
 
@@ -32,6 +31,9 @@ async def _():
         assert response.status_code == HTTPStatus.CREATED, response.json()
 
         body = response.json()
+
+        assert token_is_hashed(body["agent"]["config"]["token"], agent_data["config"]["token"])
+
         agent_data["config"]["token"] = body["agent"]["config"]["token"]
         assert body == schema.dict({
             "agent": AgentResponseSchema % agent_data % {
@@ -40,8 +42,7 @@ async def _():
             }
         })
 
-        webhooks = await get_project_webhooks(project.id, user.token)
-        assert webhooks == schema.list([..., WebhookSchema, ...])
+        assert await webhook_exists(project.id, user.token)
 
 
 @scenario("Create agent (all fields)")
@@ -94,6 +95,9 @@ async def _():
         assert response.status_code == HTTPStatus.CREATED
 
         body = response.json()
+
+        assert token_is_hashed(body["agent"]["config"]["token"], agent_data["config"]["token"])
+
         agent_data["config"]["token"] = body["agent"]["config"]["token"]
         assert body == schema.dict({
             "agent": AgentResponseSchema % agent_data % {
@@ -102,8 +106,7 @@ async def _():
             }
         })
 
-        webhooks = await get_project_webhooks(project.id, user.token)
-        assert webhooks == schema.list([..., WebhookSchema, ...])
+        assert await webhook_exists(project.id, user.token)
 
 
 @scenario("Create external agent (all fields)")
