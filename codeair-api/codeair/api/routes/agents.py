@@ -1,7 +1,9 @@
+from datetime import datetime
 from typing import Annotated, Any
 from uuid import UUID
 
-from codeair.domain.agents.models import Agent
+from codeair.config import Config
+from codeair.domain.agents.models import Agent, AgentConfig, AgentEngine, AgentProvider, AgentType
 from codeair.domain.projects import ProjectRepository
 from codeair.domain.users import User
 from codeair.services import AgentService, WebhookService
@@ -111,7 +113,60 @@ async def update_agent(
     )
 
 
+@get("/api/v1/projects/{project_id:str}/agents/placeholders")
+async def get_agent_placeholders(
+    project_id: Annotated[int, Parameter(gt=0)],
+    project_service: ProjectService,
+) -> Response[Any]:
+    # Fetch project from GitLab to ensure it exists
+    await project_service.get_project_by_id(project_id)
+
+    now = datetime.utcnow()
+
+    # Create placeholder config
+    placeholder_config = AgentConfig(
+        provider=AgentProvider(Config.AI.DEFAULT_PROVIDER),
+        model=Config.AI.DEFAULT_MODEL,
+        token=Config.AI.DEFAULT_TOKEN,
+        prompt=None,
+    )
+
+    # Create MR Describer placeholder
+    mr_describer = Agent(
+        id=UUID("00000000-0000-0000-0000-000000000001"),
+        type=AgentType.MR_DESCRIBER,
+        engine=AgentEngine.PR_AGENT_V0_29,
+        name="MR Description Writer",
+        description="Automatically generates and adds descriptions to merge requests",
+        enabled=False,
+        config=placeholder_config,
+        created_at=now,
+        updated_at=now,
+    )
+
+    # Create MR Reviewer placeholder
+    mr_reviewer = Agent(
+        id=UUID("00000000-0000-0000-0000-000000000002"),
+        type=AgentType.MR_REVIEWER,
+        engine=AgentEngine.PR_AGENT_V0_29,
+        name="MR Code Reviewer",
+        description="Reviews merge requests and adds comments with suggestions",
+        enabled=False,
+        config=placeholder_config,
+        created_at=now,
+        updated_at=now,
+    )
+
+    return Response(
+        status_code=HTTP_200_OK,
+        content=AgentsListResponse(
+            total=2,
+            agents=[mr_describer, mr_reviewer]
+        )
+    )
+
+
 agent_router = Router(
     path="",
-    route_handlers=[create_agent, list_agents, get_agent, update_agent],
+    route_handlers=[create_agent, list_agents, get_agent_placeholders, get_agent, update_agent],
 )

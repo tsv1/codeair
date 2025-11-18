@@ -76,4 +76,5 @@ def create_app() -> Litestar:
             ValidationException: validation_exception_handler,
             Exception: generic_exception_handler,
         },
+        debug=Config.App.DEBUG,
     )
