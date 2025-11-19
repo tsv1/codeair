@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
 import { getJobLog, type JobLogResponse } from './api';
 import { ArrowLeft, ExternalLink } from 'lucide-react';
-import { Navbar } from './Navbar';
+import { Navbar } from './NavBar';
 
 interface JobLogDetailProps {
   projectId: number;

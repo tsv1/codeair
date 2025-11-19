@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
 import { getProject, getAgents, getAgentPlaceholders, type Project, type Agent } from './api';
 import { ExternalLink, ArrowLeft, Settings } from 'lucide-react';
-import { Navbar } from './Navbar';
+import { Navbar } from './NavBar';
 
 interface ProjectViewProps {
   projectId: number;

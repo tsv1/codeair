@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useAuth } from './AuthContext';
 import { searchProjects, type Project } from './api';
 import { Search } from 'lucide-react';
-import { Navbar } from './Navbar';
+import { Navbar } from './NavBar';
 
 export function Dashboard() {
   const { user, token } = useAuth();

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
 import { getAgent, getAgentPlaceholders, createAgent, updateAgent, type Agent, type AgentEngine, type AgentType } from './api';
 import { ArrowLeft, Save } from 'lucide-react';
-import { Navbar } from './Navbar';
+import { Navbar } from './NavBar';
 import { JobLogs } from './JobLogs';
 
 interface AgentConfigProps {
