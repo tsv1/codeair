@@ -1,12 +1,17 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useAuth } from './AuthContext';
 import { handleCallback } from './api';
 
 export function Callback() {
   const { login } = useAuth();
   const [error, setError] = useState<string | null>(null);
+  const hasProcessed = useRef(false);
 
   useEffect(() => {
+    if (hasProcessed.current) {
+      return;
+    }
+
     const urlParams = new URLSearchParams(window.location.search);
     const code = urlParams.get('code');
 
@@ -15,12 +20,15 @@ export function Callback() {
       return;
     }
 
+    hasProcessed.current = true;
+
     handleCallback(code)
       .then(({ token, user }) => {
         login(token, user);
         window.location.href = '/';
       })
       .catch((err) => {
+        hasProcessed.current = false;
         setError(err instanceof Error ? err.message : 'Authentication failed');
       });
   }, [login]);
