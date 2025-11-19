@@ -22,6 +22,7 @@ class AuthService:
         oauth_client_id: str,
         oauth_client_secret: str,
         oauth_redirect_uri: str,
+        oauth_authorize_url: str,
         user_service: UserService,
         logger: Logger,
     ) -> None:
@@ -32,6 +33,7 @@ class AuthService:
         self._oauth_client_id = oauth_client_id
         self._oauth_client_secret = oauth_client_secret
         self._oauth_redirect_uri = oauth_redirect_uri
+        self._oauth_authorize_url = oauth_authorize_url
         self._gitlab_client = gitlab_client
         self._user_service = user_service
         self._logger = logger
@@ -43,6 +45,8 @@ class AuthService:
             "response_type": "code",
             "scope": "read_user",
         }
+        if self._oauth_authorize_url:
+            return f"{self._oauth_authorize_url}?{urlencode(params)}"
         return f"{self._gitlab_base_url}/oauth/authorize?{urlencode(params)}"
 
     async def authenticate_with_oauth_code(self, code: str) -> tuple[str, User]:

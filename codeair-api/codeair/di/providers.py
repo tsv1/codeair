@@ -162,6 +162,7 @@ def provide_auth_service(
         oauth_client_id=Config.GitLab.OAUTH_CLIENT_ID,
         oauth_client_secret=Config.GitLab.OAUTH_CLIENT_SECRET,
         oauth_redirect_uri=Config.GitLab.OAUTH_REDIRECT_URI,
+        oauth_authorize_url=Config.GitLab.OAUTH_AUTHORIZE_URL,
         user_service=user_service,
         logger=logging.getLogger("app.services.auth"),
     )

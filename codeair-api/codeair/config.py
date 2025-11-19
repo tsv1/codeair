@@ -31,6 +31,7 @@ class Config(cabina.Config):
         OAUTH_CLIENT_ID: str = env.str("GITLAB_OAUTH_CLIENT_ID")
         OAUTH_CLIENT_SECRET: str = env.str("GITLAB_OAUTH_CLIENT_SECRET")
         OAUTH_REDIRECT_URI: str = env.str("GITLAB_OAUTH_REDIRECT_URI")
+        OAUTH_AUTHORIZE_URL: str = env.str("GITLAB_OAUTH_AUTHORIZE_URL", default="")
         API_BASE_URL: str = env.str("GITLAB_API_BASE_URL")
         BOT_TOKEN: str = env.str("CODEAIR_BOT_TOKEN")
 
