@@ -47,3 +47,43 @@ class JobLogRepository:
         """
         row = await self._db_client.fetch_one(sql, job_id)
         return self._row_to_job_log(row) if row else None
+
+    async def find_by_job_id_with_details(self, job_id: int, agent_id: str) -> dict | None:
+        sql = """
+            SELECT
+                j.id as job_id,
+                j.payload->>'mr_url' as mr_url,
+                j.created_at,
+                j.started_at,
+                j.ended_at,
+                jl.exit_code,
+                jl.stdout,
+                jl.stderr,
+                jl.elapsed_ms
+            FROM jobs j
+            LEFT JOIN job_logs jl ON j.id = jl.job_id
+            WHERE j.id = $1 AND j.agent_id = $2
+        """
+        row = await self._db_client.fetch_one(sql, job_id, agent_id)
+        return dict(row) if row else None
+
+    async def find_by_agent_id(self, agent_id: str, limit: int = 10) -> list[dict]:
+        sql = """
+            SELECT
+                j.id as job_id,
+                j.payload->>'mr_url' as mr_url,
+                j.created_at,
+                j.started_at,
+                j.ended_at,
+                jl.exit_code,
+                jl.stdout,
+                jl.stderr,
+                jl.elapsed_ms
+            FROM jobs j
+            LEFT JOIN job_logs jl ON j.id = jl.job_id
+            WHERE j.agent_id = $1
+            ORDER BY j.created_at DESC
+            LIMIT $2
+        """
+        rows = await self._db_client.fetch_many(sql, agent_id, limit)
+        return [dict(row) for row in rows]

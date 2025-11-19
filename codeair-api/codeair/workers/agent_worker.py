@@ -3,7 +3,6 @@ import time
 from logging import Logger
 
 import httpx
-
 from codeair.config import Config
 from codeair.domain.agents import Agent, AgentEngine, AgentType
 from codeair.domain.job_logs import JobLog, JobLogRepository
