@@ -3,6 +3,8 @@ import { Login } from './Login';
 import { Callback } from './Callback';
 import { Dashboard } from './Dashboard';
 import { ProjectView } from './ProjectView';
+import { AgentConfig } from './AgentConfig';
+import { JobLogDetail } from './JobLogDetail';
 
 function App() {
   const { user, isLoading } = useAuth();
@@ -28,6 +30,25 @@ function App() {
   // Show login if not authenticated
   if (!user) {
     return <Login />;
+  }
+
+  // Handle job log detail route: /project/{id}/agents/{agentId}/logs/{jobId}
+  const jobLogMatch = path.match(/^\/project\/(\d+)\/agents\/([a-f0-9-]+)\/logs\/(\d+)$/);
+  if (jobLogMatch) {
+    const projectId = parseInt(jobLogMatch[1], 10);
+    const agentId = jobLogMatch[2];
+    const jobId = parseInt(jobLogMatch[3], 10);
+    return <JobLogDetail projectId={projectId} agentId={agentId} jobId={jobId} />;
+  }
+
+  // Handle agent configuration routes: /project/{id}/agents/{new|uuid}
+  const agentConfigMatch = path.match(/^\/project\/(\d+)\/agents\/(new|[a-f0-9-]+)$/);
+  if (agentConfigMatch) {
+    const projectId = parseInt(agentConfigMatch[1], 10);
+    const agentId = agentConfigMatch[2];
+    const searchParams = new URLSearchParams(window.location.search);
+    const agentType = searchParams.get('type') || undefined;
+    return <AgentConfig projectId={projectId} agentId={agentId} agentType={agentType} />;
   }
 
   // Handle project view route

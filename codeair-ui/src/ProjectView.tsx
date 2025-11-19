@@ -1,18 +1,24 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
-import { logout as logoutApi, getProject, type Project } from './api';
-import { ExternalLink, ArrowLeft } from 'lucide-react';
+import { getProject, getAgents, getAgentPlaceholders, type Project, type Agent } from './api';
+import { ExternalLink, ArrowLeft, Settings } from 'lucide-react';
+import { Navbar } from './Navbar';
 
 interface ProjectViewProps {
   projectId: number;
 }
 
 export function ProjectView({ projectId }: ProjectViewProps) {
-  const { user, token, logout } = useAuth();
-  const [dropdownActive, setDropdownActive] = useState(false);
+  const { user, token } = useAuth();
   const [project, setProject] = useState<Project | null>(null);
+  const [agents, setAgents] = useState<Agent[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingAgents, setIsLoadingAgents] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  if (!user) {
+    return null;
+  }
 
   useEffect(() => {
     if (!token) return;
@@ -32,20 +38,36 @@ export function ProjectView({ projectId }: ProjectViewProps) {
       });
   }, [projectId, token]);
 
-  if (!user) {
-    return null;
-  }
+  useEffect(() => {
+    if (!token) return;
 
-  const handleLogout = async () => {
-    if (token) {
-      try {
-        await logoutApi(token);
-      } catch (error) {
-        console.error('Logout API call failed:', error);
-      }
-    }
-    logout();
-  };
+    setIsLoadingAgents(true);
+
+    Promise.all([
+      getAgents(projectId, token),
+      getAgentPlaceholders(projectId, token)
+    ])
+      .then(([agentsResponse, placeholdersResponse]) => {
+        // Get existing agent types
+        const existingTypes = new Set(agentsResponse.agents.map(agent => agent.type));
+
+        // Add placeholders only if that agent type doesn't exist
+        const placeholdersToAdd = placeholdersResponse.agents.filter(
+          placeholder => !existingTypes.has(placeholder.type)
+        );
+
+        // Merge actual agents with missing placeholders
+        const mergedAgents = [...agentsResponse.agents, ...placeholdersToAdd];
+        setAgents(mergedAgents);
+      })
+      .catch((err) => {
+        console.error('Failed to load agents:', err);
+        setAgents([]);
+      })
+      .finally(() => {
+        setIsLoadingAgents(false);
+      });
+  }, [projectId, token]);
 
   const handleBack = () => {
     window.location.href = '/';
@@ -53,36 +75,7 @@ export function ProjectView({ projectId }: ProjectViewProps) {
 
   return (
     <>
-      <nav className="navbar" role="navigation" aria-label="main navigation">
-        <div className="container">
-          <div className="navbar-brand">
-            <span className="navbar-item">
-              <strong>CodeAir</strong>
-            </span>
-          </div>
-
-          <div className="navbar-menu">
-            <div className="navbar-end">
-              <div className={`navbar-item has-dropdown ${dropdownActive ? 'is-active' : ''}`}>
-                <a
-                  className="navbar-link"
-                  onClick={(e) => { e.preventDefault(); setDropdownActive(!dropdownActive); }}
-                >
-                  {user.username}
-                </a>
-                <div className="navbar-dropdown is-right">
-                  <a
-                    className="navbar-item"
-                    onClick={(e) => { e.preventDefault(); handleLogout(); }}
-                  >
-                    Logout
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </nav>
+      <Navbar />
 
       <section className="section">
         <div className="container">
@@ -144,7 +137,7 @@ export function ProjectView({ projectId }: ProjectViewProps) {
                         href={project.web_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="button is-link is-light"
+                        className="button is-info is-light"
                       >
                         <span>View on GitLab</span>
                         <span className="icon">
@@ -154,6 +147,57 @@ export function ProjectView({ projectId }: ProjectViewProps) {
                     </div>
                   </div>
                 </article>
+
+                <hr />
+
+                <div className="mt-5">
+                  <h2 className="title is-4 mb-4">AI Agents</h2>
+
+                  {isLoadingAgents ? (
+                    <div className="has-text-centered py-4">
+                      <p>Loading agents...</p>
+                    </div>
+                  ) : agents.length === 0 ? (
+                    <div className="notification is-info is-light">
+                      No agents configured for this project.
+                    </div>
+                  ) : (
+                    <div>
+                      {agents.map((agent) => {
+                        // Check if this is a placeholder agent (UUID starts with all zeros)
+                        const isPlaceholder = agent.id.startsWith('00000000-0000-0000-0000');
+                        const configUrl = isPlaceholder
+                          ? `/project/${projectId}/agents/new?type=${agent.type}`
+                          : `/project/${projectId}/agents/${agent.id}`;
+
+                        return (
+                          <div key={agent.id} className="box mb-3">
+                            <div className="is-flex is-justify-content-space-between is-align-items-start">
+                              <div style={{ flex: 1 }}>
+                                <div className="is-flex is-align-items-center mb-2">
+                                  <h3 className="title is-5 mb-0 mr-3">{agent.name}</h3>
+                                  <span className={`tag ${agent.enabled ? 'is-success' : 'is-light'}`}>
+                                    {agent.enabled ? 'Enabled' : 'Disabled'}
+                                  </span>
+                                </div>
+                                <p className="has-text-grey">{agent.description}</p>
+                              </div>
+                              <button
+                                className="button is-link is-light ml-4"
+                                onClick={() => window.location.href = configUrl}
+                              >
+                                <span className="icon">
+                                  <Settings size={16} />
+                                </span>
+                                <span>Configure</span>
+                              </button>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
               </div>
             )}
           </div>

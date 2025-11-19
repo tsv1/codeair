@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { useAuth } from './AuthContext';
-import { logout as logoutApi, searchProjects, type Project } from './api';
+import { searchProjects, type Project } from './api';
 import { Search } from 'lucide-react';
+import { Navbar } from './Navbar';
 
 export function Dashboard() {
-  const { user, token, logout } = useAuth();
-  const [dropdownActive, setDropdownActive] = useState(false);
+  const { user, token } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<Project[] | null>(null);
   const [botUsername, setBotUsername] = useState<string>('');
@@ -15,17 +15,6 @@ export function Dashboard() {
   if (!user) {
     return null;
   }
-
-  const handleLogout = async () => {
-    if (token) {
-      try {
-        await logoutApi(token);
-      } catch (error) {
-        console.error('Logout API call failed:', error);
-      }
-    }
-    logout();
-  };
 
   const handleSearch = async () => {
     if (!searchQuery.trim() || !token) return;
@@ -53,36 +42,7 @@ export function Dashboard() {
 
   return (
     <>
-      <nav className="navbar" role="navigation" aria-label="main navigation">
-        <div className="container">
-          <div className="navbar-brand">
-            <span className="navbar-item">
-              <strong>CodeAir</strong>
-            </span>
-          </div>
-
-          <div className="navbar-menu">
-            <div className="navbar-end">
-              <div className={`navbar-item has-dropdown ${dropdownActive ? 'is-active' : ''}`}>
-                <a
-                  className="navbar-link"
-                  onClick={(e) => { e.preventDefault(); setDropdownActive(!dropdownActive); }}
-                >
-                  {user.username}
-                </a>
-                <div className="navbar-dropdown is-right">
-                  <a
-                    className="navbar-item"
-                    onClick={(e) => { e.preventDefault(); handleLogout(); }}
-                  >
-                    Logout
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </nav>
+      <Navbar />
 
       <section className="section">
         <div className="container">
@@ -104,7 +64,7 @@ export function Dashboard() {
               </div>
               <div className="control">
                 <button
-                  className={`button is-primary ${isSearching ? 'is-loading' : ''}`}
+                  className={`button is-link ${isSearching ? 'is-loading' : ''}`}
                   onClick={handleSearch}
                   disabled={isSearching || !searchQuery.trim()}
                 >
