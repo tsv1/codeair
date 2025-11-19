@@ -1,13 +1,11 @@
 from http import HTTPStatus
 
-from vedro import given, scenario, then, when
-
-from contexts import bot_user
-from contexts import logged_in_user
+from contexts import bot_user, logged_in_user
 from contexts.gitlab import added_project_member, created_gitlab_project
 from interfaces import CodeAirAPI
 from libs.gitlab import GitLabAccessLevel
 from schemas.agents import AgentsListResponseSchema
+from vedro import given, scenario, then, when
 
 
 @scenario("Get agent placeholders for project")

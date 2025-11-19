@@ -3,6 +3,7 @@ from vedro_httpx import AsyncHTTPInterface, Response
 
 __all__ = ("CodeAirAPI",)
 
+
 class CodeAirAPI(AsyncHTTPInterface):
     def __init__(self, base_url: str = cfg.APP_API_URL) -> None:
         super().__init__(base_url)
@@ -88,3 +89,22 @@ class CodeAirAPI(AsyncHTTPInterface):
             headers["Authorization"] = f"Bearer {jwt_token}"
         return await self._request("PATCH", f"/api/v1/projects/{project_id}/agents/{agent_id}",
                                     headers=headers, json=agent_data)
+
+    async def get_agent_logs(self, jwt_token: str | None, project_id: int, agent_id: str,
+                            limit: int | None = None) -> Response:
+        headers = {}
+        if jwt_token:
+            headers["Authorization"] = f"Bearer {jwt_token}"
+        params = {}
+        if limit is not None:
+            params["limit"] = limit
+        return await self._request("GET", f"/api/v1/projects/{project_id}/agents/{agent_id}/logs",
+                                    headers=headers, params=params)
+
+    async def get_job_log(self, jwt_token: str | None, project_id: int, agent_id: str,
+                         job_id: int) -> Response:
+        headers = {}
+        if jwt_token:
+            headers["Authorization"] = f"Bearer {jwt_token}"
+        return await self._request("GET", f"/api/v1/projects/{project_id}/agents/{agent_id}/logs/{job_id}",
+                                    headers=headers)
