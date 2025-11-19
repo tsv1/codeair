@@ -13,7 +13,7 @@ A code analysis and review platform that automatically processes merge requests 
 ### Running with Docker
 
 ```bash
-docker run -p 8080:80 --env-file .env ghcr.io/tsv1/codeair:0.0.1
+docker run -p 8080:80 --env-file .env ghcr.io/tsv1/codeair:0.0.2
 ```
 
 ### Environment Configuration

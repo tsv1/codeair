@@ -18,7 +18,7 @@ class Config(cabina.Config):
         PORT: int = env.int("APP_PORT", default=8080)
         DEBUG: bool = env.bool("APP_DEBUG", default=False)
         NAME: str = env.str("APP_SERVICE_NAME", default="codeair")
-        VERSION: str = env.str("APP_VERSION", default="0.0.1")
+        VERSION: str = env.str("APP_VERSION", default="0.0.2")
         ENCRYPTION_KEY: str = env.str("APP_ENCRYPTION_KEY")
         WEBHOOK_BASE_URL: str = env.str("APP_WEBHOOK_BASE_URL")
 
