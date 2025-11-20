@@ -52,7 +52,7 @@ class AgentWorker(BaseWorker):
 
         start_time = time.time()
         process = await asyncio.create_subprocess_exec(
-            'python', '-m', 'pr_agent.cli',
+            '/usr/local/bin/python3', '-m', 'pr_agent.cli',
             f'--pr_url={mr_url}',
             'describe',
             env=env,
@@ -119,7 +119,7 @@ class AgentWorker(BaseWorker):
 
         start_time = time.time()
         process = await asyncio.create_subprocess_exec(
-            'python', '-m', 'pr_agent.cli',
+            '/usr/local/bin/python3', '-m', 'pr_agent.cli',
             f'--pr_url={mr_url}',
             'improve',
             env=env,
