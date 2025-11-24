@@ -3,6 +3,7 @@ import { useAuth } from './AuthContext';
 import { searchProjects, type Project } from './api';
 import { Search } from 'lucide-react';
 import { Navbar } from './NavBar';
+import { Link } from './Link';
 
 export function Dashboard() {
   const { user, token } = useAuth();
@@ -167,16 +168,12 @@ export function Dashboard() {
                       <div className="media-content">
                         <div className="content">
                           <p>
-                            <a
+                            <Link
                               href={`/project/${project.id}`}
-                              onClick={(e) => {
-                                e.preventDefault();
-                                window.location.href = `/project/${project.id}`;
-                              }}
                               className="has-text-weight-bold"
                             >
                               {project.name_with_namespace}
-                            </a>
+                            </Link>
                             <br />
                             {project.description && (
                               <span className="has-text-grey">{project.description}</span>

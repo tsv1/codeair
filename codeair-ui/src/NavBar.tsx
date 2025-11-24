@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useAuth } from './AuthContext';
 import { logout as logoutApi } from './api';
+import { Link } from './Link';
 
 export function Navbar() {
   const { user, token, logout } = useAuth();
@@ -25,16 +26,9 @@ export function Navbar() {
     <nav className="navbar" role="navigation" aria-label="main navigation">
       <div className="container">
         <div className="navbar-brand">
-          <a
-            href="/"
-            className="navbar-item"
-            onClick={(e) => {
-              e.preventDefault();
-              window.location.href = '/';
-            }}
-          >
+          <Link href="/" className="navbar-item">
             <strong>CodeAir</strong>
-          </a>
+          </Link>
         </div>
 
         <div className="navbar-menu">

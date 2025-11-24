@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
 import { getAgentLogs, type JobLogResponse } from './api';
+import { Link } from './Link';
 
 interface JobLogsProps {
   projectId: number;
@@ -103,16 +104,12 @@ export function JobLogs({ projectId, agentId }: JobLogsProps) {
             {logs.map((log) => (
               <tr key={log.job_id}>
                 <td>
-                  <a
+                  <Link
                     href={`/project/${projectId}/agents/${agentId}/logs/${log.job_id}`}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      window.location.href = `/project/${projectId}/agents/${agentId}/logs/${log.job_id}`;
-                    }}
                     className="has-text-link"
                   >
                     {log.job_id}
-                  </a>
+                  </Link>
                 </td>
                 <td>
                   <a

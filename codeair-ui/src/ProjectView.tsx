@@ -3,6 +3,7 @@ import { useAuth } from './AuthContext';
 import { getProject, getAgents, getAgentPlaceholders, type Project, type Agent } from './api';
 import { ExternalLink, ArrowLeft, Settings } from 'lucide-react';
 import { Navbar } from './NavBar';
+import { Link } from './Link';
 
 interface ProjectViewProps {
   projectId: number;
@@ -69,10 +70,6 @@ export function ProjectView({ projectId }: ProjectViewProps) {
       });
   }, [projectId, token]);
 
-  const handleBack = () => {
-    window.location.href = '/';
-  };
-
   return (
     <>
       <Navbar />
@@ -80,12 +77,12 @@ export function ProjectView({ projectId }: ProjectViewProps) {
       <section className="section">
         <div className="container">
           <div className="box" style={{ maxWidth: '800px', margin: '0 auto' }}>
-            <button className="button is-text mb-4" onClick={handleBack}>
+            <Link href="/" className="button is-text mb-4">
               <span className="icon">
                 <ArrowLeft size={16} />
               </span>
               <span>Back to Search</span>
-            </button>
+            </Link>
 
             {isLoading && (
               <div className="has-text-centered py-6">
@@ -182,15 +179,15 @@ export function ProjectView({ projectId }: ProjectViewProps) {
                                 </div>
                                 <p className="has-text-grey">{agent.description}</p>
                               </div>
-                              <button
+                              <Link
+                                href={configUrl}
                                 className="button is-link is-light ml-4"
-                                onClick={() => window.location.href = configUrl}
                               >
                                 <span className="icon">
                                   <Settings size={16} />
                                 </span>
                                 <span>Configure</span>
-                              </button>
+                              </Link>
                             </div>
                           </div>
                         );

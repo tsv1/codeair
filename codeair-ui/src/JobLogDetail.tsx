@@ -3,6 +3,7 @@ import { useAuth } from './AuthContext';
 import { getJobLog, type JobLogResponse } from './api';
 import { ArrowLeft, ExternalLink } from 'lucide-react';
 import { Navbar } from './NavBar';
+import { Link } from './Link';
 
 interface JobLogDetailProps {
   projectId: number;
@@ -34,9 +35,6 @@ export function JobLogDetail({ projectId, agentId, jobId }: JobLogDetailProps) {
       });
   }, [projectId, agentId, jobId, token, user]);
 
-  const handleBack = () => {
-    window.location.href = `/project/${projectId}/agents/${agentId}`;
-  };
 
   const extractMrId = (mrUrl: string): string => {
     const match = mrUrl.match(/merge_requests\/(\d+)/);
@@ -80,12 +78,15 @@ export function JobLogDetail({ projectId, agentId, jobId }: JobLogDetailProps) {
       <section className="section">
         <div className="container">
           <div className="box" style={{ maxWidth: '1200px', margin: '0 auto' }}>
-            <button className="button is-text mb-4" onClick={handleBack}>
+            <Link
+              href={`/project/${projectId}/agents/${agentId}`}
+              className="button is-text mb-4"
+            >
               <span className="icon">
                 <ArrowLeft size={16} />
               </span>
               <span>Back to Agent</span>
-            </button>
+            </Link>
 
             <h1 className="title">Job Log Details</h1>
 

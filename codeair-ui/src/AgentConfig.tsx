@@ -4,6 +4,7 @@ import { getAgent, getAgentPlaceholders, createAgent, updateAgent, type Agent, t
 import { ArrowLeft, Save } from 'lucide-react';
 import { Navbar } from './NavBar';
 import { JobLogs } from './JobLogs';
+import { Link } from './Link';
 
 interface AgentConfigProps {
   projectId: number;
@@ -173,12 +174,15 @@ export function AgentConfig({ projectId, agentId, agentType }: AgentConfigProps)
       <section className="section">
         <div className="container">
           <div className="box" style={{ maxWidth: '800px', margin: '0 auto' }}>
-            <button className="button is-text mb-4" onClick={handleBack}>
+            <Link
+              href={`/project/${projectId}`}
+              className="button is-text mb-4"
+            >
               <span className="icon">
                 <ArrowLeft size={16} />
               </span>
               <span>Back to Project</span>
-            </button>
+            </Link>
 
             <h1 className="title">{isNewAgent ? 'Create Agent' : 'Configure Agent'}</h1>
 
