@@ -46,6 +46,9 @@ class AgentWorker(BaseWorker):
             'GITLAB__PERSONAL_ACCESS_TOKEN': Config.GitLab.BOT_TOKEN,
             'ANTHROPIC__KEY': agent.config.token,
             'ANTHROPIC_API_BASE': Config.AI.PROVIDER_BASE_URL,
+
+            # Disable third-party library warnings
+            'PYTHONWARNINGS': 'ignore::UserWarning',
         }
         if agent.config.prompt:
             env['PR_DESCRIPTION__EXTRA_INSTRUCTIONS'] = agent.config.prompt
@@ -109,6 +112,9 @@ class AgentWorker(BaseWorker):
             'GITLAB__PERSONAL_ACCESS_TOKEN': Config.GitLab.BOT_TOKEN,
             'ANTHROPIC__KEY': agent.config.token,
             'ANTHROPIC_API_BASE': Config.AI.PROVIDER_BASE_URL,
+
+            # Disable third-party library warnings
+            'PYTHONWARNINGS': 'ignore::UserWarning',
         }
         if agent.config.prompt:
             env['PR_CODE_SUGGESTIONS__EXTRA_INSTRUCTIONS'] = agent.config.prompt
