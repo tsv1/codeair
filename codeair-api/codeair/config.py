@@ -38,7 +38,7 @@ class Config(cabina.Config):
     class JWT(cabina.Section):
         SECRET_KEY: str = env.str("JWT_SECRET_KEY")
         ALGORITHM: str = env.str("JWT_ALGORITHM", default="HS256")
-        TOKEN_EXPIRE_SECONDS: int = env.int("JWT_TOKEN_EXPIRE_SECONDS", default=86400)
+        TOKEN_EXPIRE_SECONDS: int = env.int("JWT_TOKEN_EXPIRE_SECONDS", default=3600*24*90)
         ISSUER: str = env.str("JWT_ISSUER", default="codeair")
         AUDIENCE: str = env.str("JWT_AUDIENCE", default="codeair-api")
 
