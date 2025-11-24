@@ -56,9 +56,9 @@ export function JobLogs({ projectId, agentId }: JobLogsProps) {
   if (isLoading) {
     return (
       <div className="box">
-        <h2 className="title is-5">Recent Jobs</h2>
+        <h2 className="title is-5">Recent Runs</h2>
         <div className="has-text-centered py-4">
-          <p>Loading jobs...</p>
+          <p>Loading runs...</p>
         </div>
       </div>
     );
@@ -67,7 +67,7 @@ export function JobLogs({ projectId, agentId }: JobLogsProps) {
   if (error) {
     return (
       <div className="box">
-        <h2 className="title is-5">Recent Jobs</h2>
+        <h2 className="title is-5">Recent Runs</h2>
         <div className="notification is-danger is-light">
           {error}
         </div>
@@ -78,9 +78,9 @@ export function JobLogs({ projectId, agentId }: JobLogsProps) {
   if (logs.length === 0) {
     return (
       <div className="box">
-        <h2 className="title is-5">Recent Jobs</h2>
+        <h2 className="title is-5">Recent Runs</h2>
         <div className="notification is-info is-light">
-          No jobs have been executed yet.
+          No runs have been executed yet.
         </div>
       </div>
     );
@@ -88,12 +88,12 @@ export function JobLogs({ projectId, agentId }: JobLogsProps) {
 
   return (
     <div className="box">
-      <h2 className="title is-5">Recent Jobs</h2>
+      <h2 className="title is-5">Recent Runs</h2>
       <div className="table-container">
         <table className="table is-fullwidth is-striped is-hoverable">
           <thead>
             <tr>
-              <th>Job ID</th>
+              <th>Run ID</th>
               <th>MR ID</th>
               <th>Created At</th>
               <th>Ended At</th>

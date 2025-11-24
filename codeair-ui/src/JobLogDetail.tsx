@@ -28,13 +28,12 @@ export function JobLogDetail({ projectId, agentId, jobId }: JobLogDetailProps) {
         setLog(response);
       })
       .catch((err) => {
-        setError(err instanceof Error ? err.message : 'Failed to load job log');
+        setError(err instanceof Error ? err.message : 'Failed to load run log');
       })
       .finally(() => {
         setIsLoading(false);
       });
   }, [projectId, agentId, jobId, token, user]);
-
 
   const extractMrId = (mrUrl: string): string => {
     const match = mrUrl.match(/merge_requests\/(\d+)/);
@@ -88,11 +87,11 @@ export function JobLogDetail({ projectId, agentId, jobId }: JobLogDetailProps) {
               <span>Back to Agent</span>
             </Link>
 
-            <h1 className="title">Job Log Details</h1>
+            <h1 className="title">Run Log Details</h1>
 
             {isLoading && (
               <div className="has-text-centered py-6">
-                <p>Loading job log...</p>
+                <p>Loading run log...</p>
               </div>
             )}
 
@@ -106,11 +105,11 @@ export function JobLogDetail({ projectId, agentId, jobId }: JobLogDetailProps) {
               <div>
                 {/* Job Info Section */}
                 <div className="box mb-4">
-                  <h2 className="title is-5 mb-3">Job Information</h2>
+                  <h2 className="title is-5 mb-3">Run Information</h2>
                   <div className="columns is-multiline">
                     <div className="column is-half">
                       <div className="field">
-                        <label className="label is-small">Job ID</label>
+                        <label className="label is-small">Run ID</label>
                         <p className="has-text-weight-semibold">{log.job_id}</p>
                       </div>
                     </div>
