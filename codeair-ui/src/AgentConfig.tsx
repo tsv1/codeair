@@ -299,7 +299,7 @@ export function AgentConfig({ projectId, agentId, agentType }: AgentConfigProps)
 
                 {/* Provider */}
                 <div className="field">
-                  <label className="label">Provider</label>
+                  <label className="label">AI Provider</label>
                   <div className="control">
                     <div className="select is-fullwidth">
                       <select
@@ -314,7 +314,7 @@ export function AgentConfig({ projectId, agentId, agentType }: AgentConfigProps)
 
                 {/* Model */}
                 <div className="field">
-                  <label className="label">Model</label>
+                  <label className="label">AI Model</label>
                   <div className="control">
                     <input
                       className={`input ${validationErrors.model ? 'is-danger' : ''}`}
@@ -331,7 +331,7 @@ export function AgentConfig({ projectId, agentId, agentType }: AgentConfigProps)
 
                 {/* Token */}
                 <div className="field">
-                  <label className="label">Token</label>
+                  <label className="label">AI Token</label>
                   <div className="control">
                     <input
                       className={`input ${validationErrors.token ? 'is-danger' : ''}`}
@@ -349,7 +349,7 @@ export function AgentConfig({ projectId, agentId, agentType }: AgentConfigProps)
                 {/* Prompt */}
                 <div className="field">
                   <label className="label">
-                    Prompt <span className="has-text-grey-light">(optional)</span>
+                    Custom Prompt <span className="has-text-grey-light">(optional)</span>
                   </label>
                   <div className="control">
                     <textarea
