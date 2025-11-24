@@ -83,6 +83,7 @@ class AuthService:
             id=user_data["id"],
             username=user_data["username"],
             name=user_data["name"],
+            web_url=user_data["web_url"],
             avatar_url=user_data.get("avatar_url"),
         )
 

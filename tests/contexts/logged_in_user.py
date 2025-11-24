@@ -17,6 +17,7 @@ class LoggedInUser:
     user_id: int
     token: str
     jwt_token: str
+    web_url: str = None
     avatar_url: str | None = None
 
 
@@ -59,5 +60,6 @@ async def logged_in_user(user: GitLabUser | None = None) -> LoggedInUser:
         user_id=user.user_id,
         token=gitlab_token,
         jwt_token=jwt_token,
+        web_url=user.web_url,
         avatar_url=user.avatar_url,
     )

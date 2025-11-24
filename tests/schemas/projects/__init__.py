@@ -1,13 +1,8 @@
 from d42 import schema
 
-__all__ = ["BotUserSchema", "ProjectItemSchema", "ProjectSearchResponseSchema", "ProjectDetailResponseSchema"]
+from schemas.auth import UserSchema
 
-BotUserSchema = schema.dict({
-    "id": schema.int.min(1),
-    "username": schema.str.len(1, ...),
-    "name": schema.str.len(1, ...),
-    "avatar_url": schema.str | schema.none,
-})
+__all__ = ["ProjectItemSchema", "ProjectSearchResponseSchema", "ProjectDetailResponseSchema"]
 
 ProjectItemSchema = schema.dict({
     "id": schema.int.min(1),
@@ -26,7 +21,7 @@ ProjectItemSchema = schema.dict({
 ProjectSearchResponseSchema = schema.dict({
     "total": schema.int.min(0),
     "items": schema.list(ProjectItemSchema),
-    "bot_user": BotUserSchema,
+    "bot_user": UserSchema,
 })
 
 ProjectDetailResponseSchema = schema.dict({

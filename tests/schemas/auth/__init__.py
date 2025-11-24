@@ -10,6 +10,7 @@ UserSchema = schema.dict({
     "id": schema.int.min(1),
     "username": schema.str.len(1, ...),
     "name": schema.str.len(1, ...),
+    "web_url": schema.str.len(1, ...),
     "avatar_url": schema.str | schema.none,
 })
 

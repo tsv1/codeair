@@ -12,6 +12,7 @@ class UserData(TypedDict):
     id: int
     username: str
     name: str
+    web_url: str
     avatar_url: str | None
 
 
@@ -104,6 +105,7 @@ class GitLabClient(GitProvider):
             "id": user_data["id"],
             "username": user_data["username"],
             "name": user_data["name"],
+            "web_url": user_data["web_url"],
             "avatar_url": user_data.get("avatar_url"),
         }
 

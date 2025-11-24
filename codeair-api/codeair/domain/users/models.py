@@ -9,6 +9,7 @@ class User(BaseModel):
     id: int
     username: str
     name: str
+    web_url: str
     avatar_url: Optional[str] = None
 
 

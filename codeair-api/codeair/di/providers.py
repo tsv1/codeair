@@ -27,6 +27,9 @@ async def retrieve_user_handler(
     username = token.extras.get("username")
     name = token.extras.get("name")
 
+    base_url = Config.GitLab.API_BASE_URL.rstrip("/")
+    web_url = token.extras.get("web_url", f"{base_url}/{username}")  # backward compatibility
+
     if not token.sub or not username or not name:
         return None
 
@@ -34,6 +37,7 @@ async def retrieve_user_handler(
         id=int(token.sub),
         username=str(username),
         name=str(name),
+        web_url=web_url,
         avatar_url=token.extras.get("avatar_url"),
     )
 

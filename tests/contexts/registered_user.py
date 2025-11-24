@@ -14,10 +14,11 @@ class GitLabUser:
     name: str
     password: str
     user_id: int
+    web_url: str
     avatar_url: Optional[str] = None
 
 
-async def _register_user(username: str, name: str, email: str, password: str) -> int:
+async def _register_user(username: str, name: str, email: str, password: str) -> tuple[int, str]:
     response = await GitLabAPI().create_user(
         username=username,
         name=name,
@@ -28,7 +29,7 @@ async def _register_user(username: str, name: str, email: str, password: str) ->
     response.raise_for_status()
 
     body = response.json()
-    return body["id"]
+    return body["id"], body["web_url"]
 
 
 @context
@@ -37,12 +38,13 @@ async def registered_user() -> GitLabUser:
     email = f"{username}@example.com"
     password = generate_password(12)
 
-    user_id = await _register_user(username, name, email, password)
+    user_id, web_url = await _register_user(username, name, email, password)
 
     return GitLabUser(
         username=username,
         name=name,
         password=password,
         user_id=user_id,
+        web_url=web_url,
         avatar_url=None,
     )
