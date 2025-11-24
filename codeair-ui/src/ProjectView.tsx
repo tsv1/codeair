@@ -103,7 +103,7 @@ export function ProjectView({ projectId }: ProjectViewProps) {
               <div>
                 <article className="media">
                   <figure className="media-left">
-                    <p className="image is-128x128">
+                    <div className="image is-128x128">
                       {project.avatar_url ? (
                         <img src={project.avatar_url} alt={project.name} />
                       ) : (
@@ -123,7 +123,7 @@ export function ProjectView({ projectId }: ProjectViewProps) {
                           </span>
                         </div>
                       )}
-                    </p>
+                    </div>
                   </figure>
                   <div className="media-content">
                     <div className="content">

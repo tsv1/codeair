@@ -99,7 +99,7 @@ export function Dashboard() {
                   <div key={project.id} className="box mb-3">
                     <article className="media">
                       <figure className="media-left">
-                        <p className="image is-64x64">
+                        <div className="image is-64x64">
                           {project.avatar_url ? (
                             <img src={project.avatar_url} alt={project.name} />
                           ) : (
@@ -119,7 +119,7 @@ export function Dashboard() {
                               </span>
                             </div>
                           )}
-                        </p>
+                        </div>
                       </figure>
                       <div className="media-content">
                         <div className="content">
