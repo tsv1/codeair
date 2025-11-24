@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAuth } from './AuthContext';
 import { searchProjects, type Project } from './api';
 import { Search } from 'lucide-react';
@@ -12,13 +12,50 @@ export function Dashboard() {
   const [botUserWebUrl, setBotUserWebUrl] = useState<string>('');
   const [isSearching, setIsSearching] = useState(false);
   const [searchError, setSearchError] = useState<string | null>(null);
+  const hasLoadedFromUrl = useRef(false);
 
   if (!user) {
     return null;
   }
 
+  // Load search query from URL on mount
+  useEffect(() => {
+    if (hasLoadedFromUrl.current || !token) return;
+
+    const params = new URLSearchParams(window.location.search);
+    const queryFromUrl = params.get('q');
+
+    if (queryFromUrl) {
+      hasLoadedFromUrl.current = true;
+      setSearchQuery(queryFromUrl);
+
+      // Perform initial search
+      setIsSearching(true);
+      setSearchError(null);
+
+      searchProjects(queryFromUrl, token)
+        .then((response) => {
+          setSearchResults(response.items);
+          setBotUsername(response.bot_user.username);
+          setBotUserWebUrl(response.bot_user.web_url);
+        })
+        .catch((error) => {
+          setSearchError(error instanceof Error ? error.message : 'Failed to search projects');
+          setSearchResults(null);
+        })
+        .finally(() => {
+          setIsSearching(false);
+        });
+    }
+  }, [token]);
+
   const handleSearch = async () => {
     if (!searchQuery.trim() || !token) return;
+
+    // Update URL with search query
+    const url = new URL(window.location.href);
+    url.searchParams.set('q', searchQuery);
+    window.history.pushState({}, '', url.toString());
 
     setIsSearching(true);
     setSearchError(null);
