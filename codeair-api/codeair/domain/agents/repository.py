@@ -45,7 +45,7 @@ class AgentRepository:
                    created_at, updated_at
             FROM agents
             WHERE project_id = $1
-            ORDER BY created_at DESC
+            ORDER BY agent_type ASC, created_at DESC
         """
         rows = await self._db_client.fetch_many(sql, project_id)
         return [self._row_to_agent(row) for row in rows]
