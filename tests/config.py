@@ -1,6 +1,14 @@
+from pathlib import Path
+
+from dotenv import load_dotenv
 from vedro.config import Section, env
 
 __all__ = ("Config",)
+
+
+# Load .env file from the same directory as this config file
+env_path = Path(__file__).parent / ".env"
+load_dotenv(dotenv_path=env_path)
 
 
 class Config(Section):
