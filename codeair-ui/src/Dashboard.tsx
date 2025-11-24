@@ -9,6 +9,7 @@ export function Dashboard() {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<Project[] | null>(null);
   const [botUsername, setBotUsername] = useState<string>('');
+  const [botUserWebUrl, setBotUserWebUrl] = useState<string>('');
   const [isSearching, setIsSearching] = useState(false);
   const [searchError, setSearchError] = useState<string | null>(null);
 
@@ -26,6 +27,7 @@ export function Dashboard() {
       const response = await searchProjects(searchQuery, token);
       setSearchResults(response.items);
       setBotUsername(response.bot_user.username);
+      setBotUserWebUrl(response.bot_user.web_url);
     } catch (error) {
       setSearchError(error instanceof Error ? error.message : 'Failed to search projects');
       setSearchResults(null);
@@ -88,7 +90,11 @@ export function Dashboard() {
                 <p className="mb-2">Can't find your project? Make sure:</p>
                 <ul style={{ marginLeft: '1.5rem' }}>
                   <li>Check for typos in your search query</li>
-                  <li>Add <strong>{botUsername || 'codeair'}</strong> user with Maintainer role to your project</li>
+                  <li>Add {
+                    <a href={botUserWebUrl} target="_blank" rel="noopener noreferrer" className="has-text-weight-bold">
+                      {botUsername}
+                    </a>
+                  } user with Maintainer role to your project</li>
                 </ul>
               </div>
             )}
@@ -147,7 +153,11 @@ export function Dashboard() {
 
                 <div className="notification is-info is-light mt-4">
                   <p className="is-size-7">
-                    Can't find your project? Add <strong>{botUsername || 'codeair'}</strong> user with Maintainer role to make it accessible.
+                    Can't find your project? Add {
+                      <a href={botUserWebUrl} target="_blank" rel="noopener noreferrer" className="has-text-weight-bold">
+                        {botUsername}
+                      </a>
+                    } user with Maintainer role to make it accessible.
                   </p>
                 </div>
               </div>
