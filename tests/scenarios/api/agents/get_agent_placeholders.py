@@ -31,7 +31,7 @@ async def _():
                     "id": "00000000-0000-0000-0000-000000000001",
                     "type": "mr-describer",
                     "engine": "pr_agent_v0.29",
-                    "name": "MR Description Writer",
+                    "name": "📝 MR Description Writer",
                     "description": "Automatically generates and adds descriptions to merge requests",
                     "enabled": False,
                     "config": {
@@ -46,7 +46,7 @@ async def _():
                     "id": "00000000-0000-0000-0000-000000000002",
                     "type": "mr-reviewer",
                     "engine": "pr_agent_v0.29",
-                    "name": "MR Code Reviewer",
+                    "name": "🔍 MR Code Reviewer",
                     "description": "Reviews merge requests and adds comments with suggestions",
                     "enabled": False,
                     "config": {

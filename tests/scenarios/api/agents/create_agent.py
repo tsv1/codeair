@@ -37,7 +37,7 @@ async def _():
         agent_data["config"]["token"] = body["agent"]["config"]["token"]
         assert body == schema.dict({
             "agent": AgentResponseSchema % agent_data % {
-                "name": "MR Description Writer",
+                "name": "📝 MR Description Writer",
                 "description": "Automatically generates and adds descriptions to merge requests",
             }
         })
@@ -101,7 +101,7 @@ async def _():
         agent_data["config"]["token"] = body["agent"]["config"]["token"]
         assert body == schema.dict({
             "agent": AgentResponseSchema % agent_data % {
-                "name": "MR Code Reviewer",
+                "name": "🔍 MR Code Reviewer",
                 "description": "Reviews merge requests and adds comments with suggestions",
             }
         })

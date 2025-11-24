@@ -28,9 +28,9 @@ class AgentService:
     async def create_agent(self, project_id: int, agent: Agent, user_id: int) -> Agent:
         if not agent.name:
             if agent.type is AgentType.MR_DESCRIBER:
-                agent.name = "MR Description Writer"
+                agent.name = "📝 MR Description Writer"
             else:
-                agent.name = "MR Code Reviewer"
+                agent.name = "🔍 MR Code Reviewer"
 
         if not agent.description:
             if agent.type is AgentType.MR_DESCRIBER:
