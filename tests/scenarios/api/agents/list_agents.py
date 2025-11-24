@@ -88,8 +88,8 @@ async def _():
         assert body == AgentsListResponseSchema % {
             "total": 2,
             "agents": [
-                asdict(agent2),
                 asdict(agent1),
+                asdict(agent2),
             ]
         }
 
