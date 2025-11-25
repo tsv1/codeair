@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
-import { getJobLog, type JobLogResponse } from './api';
-import { ArrowLeft, ExternalLink } from 'lucide-react';
+import { getJobLog, getProject, getAgent, type JobLogResponse, type Project, type Agent } from './api';
+import { ArrowLeft, ExternalLink, Home, Folder, Bot, FileText } from 'lucide-react';
 import { Navbar } from './NavBar';
 import { Link } from './Link';
 import { AnsiOutput } from './AnsiOutput';
+import { Breadcrumb } from './Breadcrumb';
 
 interface JobLogDetailProps {
   projectId: number;
@@ -15,6 +16,8 @@ interface JobLogDetailProps {
 export function JobLogDetail({ projectId, agentId, jobId }: JobLogDetailProps) {
   const { user, token } = useAuth();
   const [log, setLog] = useState<JobLogResponse | null>(null);
+  const [project, setProject] = useState<Project | null>(null);
+  const [agent, setAgent] = useState<Agent | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -35,6 +38,30 @@ export function JobLogDetail({ projectId, agentId, jobId }: JobLogDetailProps) {
         setIsLoading(false);
       });
   }, [projectId, agentId, jobId, token, user]);
+
+  useEffect(() => {
+    if (!token || !user) return;
+
+    getProject(projectId, token)
+      .then((response) => {
+        setProject(response.project);
+      })
+      .catch((err) => {
+        console.error('Failed to load project:', err);
+      });
+  }, [projectId, token, user]);
+
+  useEffect(() => {
+    if (!token || !user) return;
+
+    getAgent(projectId, agentId, token)
+      .then((response) => {
+        setAgent(response.agent);
+      })
+      .catch((err) => {
+        console.error('Failed to load agent:', err);
+      });
+  }, [projectId, agentId, token, user]);
 
   const extractMrId = (mrUrl: string): string => {
     const match = mrUrl.match(/merge_requests\/(\d+)/);
@@ -80,7 +107,13 @@ export function JobLogDetail({ projectId, agentId, jobId }: JobLogDetailProps) {
       <section className="section">
         <div className="container">
           <div className="box" style={{ maxWidth: '1200px', margin: '0 auto' }}>
-            <Link
+            <Breadcrumb items={[
+              { label: 'Dashboard', href: '/', icon: <Home size={14} /> },
+              { label: project?.name || 'Project', href: `/project/${projectId}`, icon: <Folder size={14} /> },
+              { label: agent?.name || 'Agent', href: `/project/${projectId}/agents/${agentId}`, icon: <Bot size={14} /> },
+              { label: `Run #${jobId}`, icon: <FileText size={14} /> },
+            ]} />
+            {/*<Link
               href={`/project/${projectId}/agents/${agentId}`}
               className="button is-text mb-4"
             >
@@ -88,7 +121,7 @@ export function JobLogDetail({ projectId, agentId, jobId }: JobLogDetailProps) {
                 <ArrowLeft size={16} />
               </span>
               <span>Back to Agent</span>
-            </Link>
+            </Link>*/}
 
             <h1 className="title">Run Log Details</h1>
 

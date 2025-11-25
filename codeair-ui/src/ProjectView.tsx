@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
 import { getProject, getAgents, getAgentPlaceholders, type Project, type Agent } from './api';
-import { ExternalLink, ArrowLeft, Settings } from 'lucide-react';
+import { ExternalLink, ArrowLeft, Settings, Home, Folder } from 'lucide-react';
 import { Navbar } from './NavBar';
 import { Link } from './Link';
+import { Breadcrumb } from './Breadcrumb';
 
 interface ProjectViewProps {
   projectId: number;
@@ -77,12 +78,16 @@ export function ProjectView({ projectId }: ProjectViewProps) {
       <section className="section">
         <div className="container">
           <div className="box" style={{ maxWidth: '800px', margin: '0 auto' }}>
-            <Link href="/" className="button is-text mb-4">
+            <Breadcrumb items={[
+              { label: 'Dashboard', href: '/', icon: <Home size={14} /> },
+              { label: project?.name || 'Project', icon: <Folder size={14} /> }
+            ]} />
+            {/*<Link href="/" className="button is-text mb-4">
               <span className="icon">
                 <ArrowLeft size={16} />
               </span>
               <span>Back to Search</span>
-            </Link>
+            </Link>*/}
 
             {isLoading && (
               <div className="has-text-centered py-6">

@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
-import { getAgent, getAgentPlaceholders, createAgent, updateAgent, type Agent, type AgentEngine, type AgentType } from './api';
-import { ArrowLeft, Save } from 'lucide-react';
+import { getAgent, getAgentPlaceholders, createAgent, updateAgent, getProject, type Agent, type AgentEngine, type AgentType, type Project } from './api';
+import { ArrowLeft, Save, Home, Folder, Bot } from 'lucide-react';
 import { Navbar } from './NavBar';
 import { JobLogs } from './JobLogs';
 import { Link } from './Link';
+import { Breadcrumb } from './Breadcrumb';
 
 interface AgentConfigProps {
   projectId: number;
@@ -30,6 +31,9 @@ export function AgentConfig({ projectId, agentId, agentType }: AgentConfigProps)
 
   // Available agent types from placeholders
   const [availableTypes, setAvailableTypes] = useState<AgentType[]>([]);
+
+  // Project data
+  const [project, setProject] = useState<Project | null>(null);
 
   // UI state
   const [isLoading, setIsLoading] = useState(true);
@@ -99,6 +103,18 @@ export function AgentConfig({ projectId, agentId, agentType }: AgentConfigProps)
         });
     }
   }, [projectId, agentId, token, user, isNewAgent, agentType]);
+
+  useEffect(() => {
+    if (!token || !user) return;
+
+    getProject(projectId, token)
+      .then((response) => {
+        setProject(response.project);
+      })
+      .catch((err) => {
+        console.error('Failed to load project:', err);
+      });
+  }, [projectId, token, user]);
 
   const handleBack = () => {
     window.location.href = `/project/${projectId}`;
@@ -174,7 +190,12 @@ export function AgentConfig({ projectId, agentId, agentType }: AgentConfigProps)
       <section className="section">
         <div className="container">
           <div className="box" style={{ maxWidth: '800px', margin: '0 auto' }}>
-            <Link
+            <Breadcrumb items={[
+              { label: 'Dashboard', href: '/', icon: <Home size={14} /> },
+              { label: project?.name || 'Project', href: `/project/${projectId}`, icon: <Folder size={14} /> },
+              { label: isNewAgent ? 'Create Agent' : (name || 'Configure Agent'), icon: <Bot size={14} /> },
+            ]} />
+            {/*<Link
               href={`/project/${projectId}`}
               className="button is-text mb-4"
             >
@@ -182,7 +203,7 @@ export function AgentConfig({ projectId, agentId, agentType }: AgentConfigProps)
                 <ArrowLeft size={16} />
               </span>
               <span>Back to Project</span>
-            </Link>
+            </Link>*/}
 
             <h1 className="title">{isNewAgent ? 'Create Agent' : 'Configure Agent'}</h1>
 
