@@ -136,8 +136,8 @@ export function JobLogDetail({ projectId, agentId, jobId }: JobLogDetailProps) {
                     </div>
                     <div className="column is-half">
                       <div className="field">
-                        <label className="label is-small">Created At</label>
-                        <p>{formatDate(log.created_at)}</p>
+                        <label className="label is-small">Started At</label>
+                        <p>{formatDate(log.started_at)}</p>
                       </div>
                     </div>
                     <div className="column is-half">
