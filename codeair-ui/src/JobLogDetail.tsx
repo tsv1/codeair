@@ -4,6 +4,7 @@ import { getJobLog, type JobLogResponse } from './api';
 import { ArrowLeft, ExternalLink } from 'lucide-react';
 import { Navbar } from './NavBar';
 import { Link } from './Link';
+import { AnsiOutput } from './AnsiOutput';
 
 interface JobLogDetailProps {
   projectId: number;
@@ -166,19 +167,7 @@ export function JobLogDetail({ projectId, agentId, jobId }: JobLogDetailProps) {
                 <div className="box mb-4">
                   <h2 className="title is-5 mb-3">Standard Output (stdout)</h2>
                   {log.stdout ? (
-                    <div
-                      style={{
-                        maxHeight: '400px',
-                        overflow: 'auto',
-                        backgroundColor: '#f5f5f5',
-                        padding: '1rem',
-                        borderRadius: '4px',
-                      }}
-                    >
-                      <pre style={{ margin: 0, whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
-                        {log.stdout}
-                      </pre>
-                    </div>
+                    <AnsiOutput content={log.stdout} />
                   ) : (
                     <div className="notification is-light">
                       <p className="has-text-grey-light">No stdout output</p>
@@ -190,27 +179,10 @@ export function JobLogDetail({ projectId, agentId, jobId }: JobLogDetailProps) {
                 <div className="box">
                   <h2 className="title is-5 mb-3">Standard Error (stderr)</h2>
                   {log.stderr ? (
-                    <div
-                      style={{
-                        maxHeight: '400px',
-                        overflow: 'auto',
-                        backgroundColor: '#fff5f5',
-                        padding: '1rem',
-                        borderRadius: '4px',
-                        border: '1px solid #f14668',
-                      }}
-                    >
-                      <pre
-                        style={{
-                          margin: 0,
-                          whiteSpace: 'pre-wrap',
-                          wordBreak: 'break-word',
-                          color: '#cc0f35',
-                        }}
-                      >
-                        {log.stderr}
-                      </pre>
-                    </div>
+                    <AnsiOutput
+                      content={log.stderr}
+                      border="1px solid #f14668"
+                    />
                   ) : (
                     <div className="notification is-light">
                       <p className="has-text-grey-light">No stderr output</p>
