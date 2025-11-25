@@ -57,14 +57,16 @@ export function JobLogDetail({ projectId, agentId, jobId }: JobLogDetailProps) {
     return `${minutes}m ${remainingSeconds}s`;
   };
 
-  const getStatusClass = (exitCode: number | null): string => {
-    if (exitCode === null) return 'tag is-light';
-    return exitCode === 0 ? 'tag is-success' : 'tag is-danger';
+  const getStatusClass = (createdAt: string | null, endedAt: string | null): string => {
+    if (createdAt === null && endedAt === null) return 'tag is-light';
+    if (createdAt !== null && endedAt === null) return 'tag is-light';
+    return 'tag is-success';
   };
 
-  const getStatusText = (exitCode: number | null): string => {
-    if (exitCode === null) return 'Running';
-    return exitCode === 0 ? 'Success' : `Failed (Exit Code: ${exitCode})`;
+  const getStatusText = (createdAt: string | null, endedAt: string | null): string => {
+    if (createdAt === null && endedAt === null) return 'Pending';
+    if (createdAt !== null && endedAt === null) return 'Running';
+    return 'Finished';
   };
 
   if (!user) {
@@ -154,8 +156,8 @@ export function JobLogDetail({ projectId, agentId, jobId }: JobLogDetailProps) {
                       <div className="field">
                         <label className="label is-small">Status</label>
                         <p>
-                          <span className={getStatusClass(log.exit_code)}>
-                            {getStatusText(log.exit_code)}
+                          <span className={getStatusClass(log.created_at, log.ended_at)}>
+                            {getStatusText(log.created_at, log.ended_at)}
                           </span>
                         </p>
                       </div>

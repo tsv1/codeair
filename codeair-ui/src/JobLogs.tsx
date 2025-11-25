@@ -43,14 +43,16 @@ export function JobLogs({ projectId, agentId }: JobLogsProps) {
     return date.toLocaleString();
   };
 
-  const getExitCodeClass = (exitCode: number | null): string => {
-    if (exitCode === null) return 'tag is-light';
-    return exitCode === 0 ? 'tag is-success' : 'tag is-danger';
+  const getStatusClass = (createdAt: string | null, endedAt: string | null): string => {
+    if (createdAt === null && endedAt === null) return 'tag is-light';
+    if (createdAt !== null && endedAt === null) return 'tag is-light';
+    return 'tag is-success';
   };
 
-  const getExitCodeText = (exitCode: number | null): string => {
-    if (exitCode === null) return 'Running';
-    return exitCode === 0 ? 'Success' : `Failed (${exitCode})`;
+  const getStatusText = (createdAt: string | null, endedAt: string | null): string => {
+    if (createdAt === null && endedAt === null) return 'Pending';
+    if (createdAt !== null && endedAt === null) return 'Running';
+    return 'Finished';
   };
 
   if (isLoading) {
@@ -124,8 +126,8 @@ export function JobLogs({ projectId, agentId }: JobLogsProps) {
                 <td>{formatDate(log.created_at)}</td>
                 <td>{log.ended_at ? formatDate(log.ended_at) : '-'}</td>
                 <td>
-                  <span className={getExitCodeClass(log.exit_code)}>
-                    {getExitCodeText(log.exit_code)}
+                  <span className={getStatusClass(log.created_at, log.ended_at)}>
+                    {getStatusText(log.created_at, log.ended_at)}
                   </span>
                 </td>
               </tr>
