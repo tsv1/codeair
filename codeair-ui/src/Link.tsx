@@ -1,4 +1,4 @@
-import { ReactNode, MouseEvent, AnchorHTMLAttributes } from 'react';
+import type { ReactNode, MouseEvent, AnchorHTMLAttributes } from 'react';
 
 interface LinkProps extends Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'onClick'> {
   href: string;
