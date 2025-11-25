@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
 import { getAgent, getAgentPlaceholders, createAgent, updateAgent, getProject, type Agent, type AgentEngine, type AgentType, type Project } from './api';
-import { ArrowLeft, Save, Home, Folder, Bot } from 'lucide-react';
+import { Save, Home, Folder, Bot } from 'lucide-react';
 import { Navbar } from './NavBar';
 import { JobLogs } from './JobLogs';
-import { Link } from './Link';
 import { Breadcrumb } from './Breadcrumb';
 
 interface AgentConfigProps {

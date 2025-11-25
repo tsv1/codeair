@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
 import { getJobLog, getProject, getAgent, type JobLogResponse, type Project, type Agent } from './api';
-import { ArrowLeft, ExternalLink, Home, Folder, Bot, FileText } from 'lucide-react';
+import { ExternalLink, Home, Folder, Bot, FileText } from 'lucide-react';
 import { Navbar } from './NavBar';
-import { Link } from './Link';
 import { AnsiOutput } from './AnsiOutput';
 import { Breadcrumb } from './Breadcrumb';
 

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
 import { getProject, getAgents, getAgentPlaceholders, type Project, type Agent } from './api';
-import { ExternalLink, ArrowLeft, Settings, Home, Folder } from 'lucide-react';
+import { ExternalLink, Settings, Home, Folder } from 'lucide-react';
 import { Navbar } from './NavBar';
 import { Link } from './Link';
 import { Breadcrumb } from './Breadcrumb';
