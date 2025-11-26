@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   postgres:
     image: postgres:16
@@ -21,24 +19,22 @@ services:
       retries: 5
 
   api:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: ghcr.io/tsv1/codeair:0.0.6
     container_name: codeair-api
     command: python -m uvicorn codeair.start_server:app --host 0.0.0.0 --port 8080
     ports:
       - "8080:8080"
     env_file:
       - .env
+    volumes:
+      - migrations:/app/api/codeair/migrations
     depends_on:
       postgres:
         condition: service_healthy
     restart: unless-stopped
 
   worker:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: ghcr.io/tsv1/codeair:0.0.6
     container_name: codeair-worker
     command: python -m codeair.start_worker
     env_file:
@@ -49,3 +45,17 @@ services:
       api:
         condition: service_started
     restart: unless-stopped
+
+  migrations:
+    image: gomicro/goose:3.7.0
+    command: goose postgres up
+    environment:
+      - GOOSE_DBSTRING=postgresql://codeair:dev_aQUCVlDkUk@postgres:5432/codeair
+    volumes:
+      - migrations:/migrations
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  migrations:
