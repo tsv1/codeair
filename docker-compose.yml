@@ -19,7 +19,7 @@ services:
       retries: 5
 
   api:
-    image: ghcr.io/tsv1/codeair:0.0.6
+    image: ghcr.io/tsv1/codeair:0.1.0
     container_name: codeair-api
     command: python -m uvicorn codeair.start_server:app --host 0.0.0.0 --port 8080
     ports:
@@ -34,7 +34,7 @@ services:
     restart: unless-stopped
 
   worker:
-    image: ghcr.io/tsv1/codeair:0.0.6
+    image: ghcr.io/tsv1/codeair:0.1.0
     container_name: codeair-worker
     command: python -m codeair.start_worker
     env_file:

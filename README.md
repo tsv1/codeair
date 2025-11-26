@@ -84,7 +84,7 @@ docker-compose up -d
 
 ### Alternative Deployment
 
-The CodeAir image (`ghcr.io/tsv1/codeair:0.0.6`) can be deployed anywhere (Kubernetes, VM, etc.) by running two containers with the same environment variables.
+The CodeAir image (`ghcr.io/tsv1/codeair:0.1.0`) can be deployed anywhere (Kubernetes, VM, etc.) by running two containers with the same environment variables.
 
 ## How It Works
 
